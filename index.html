@@ -17,25 +17,24 @@
             --accent: #3b82f6;
             --accent-hover: #2563eb;
             --danger: #ef4444;
+            --success: #10b981;
             --border: #2d3748;
             --sidebar-width: 240px;
         }
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
-        /* --- Mobile Header & Menu Toggle --- */
+        /* --- Mobile Header & Sidebar --- */
         .mobile-header { display: none; background: var(--bg-card); padding: 15px 20px; border-bottom: 1px solid var(--border); align-items: center; justify-content: space-between; }
         .menu-btn { background: none; border: none; color: var(--text-main); font-size: 24px; cursor: pointer; padding: 0; }
         .overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 40; }
-
-        /* --- Sidebar Navigation --- */
         .sidebar { width: var(--sidebar-width); background-color: var(--bg-card); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 0; z-index: 50; transition: transform 0.3s ease; }
         .sidebar h2 { padding: 0 20px; font-size: 20px; background: linear-gradient(to right, #3b82f6, #8b5cf6); -webkit-background-clip: text; color: transparent; margin-bottom: 30px; }
         .nav-item { padding: 15px 20px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 10px;}
         .nav-item:hover { background-color: var(--bg-input); color: var(--text-main); }
         .nav-item.active { background-color: rgba(59, 130, 246, 0.1); color: var(--accent); border-left-color: var(--accent); }
 
-        /* --- Main Content Area --- */
+        /* --- Layout --- */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .scrollable-area { padding: 30px; overflow-y: auto; flex: 1; }
         .tab-content { display: none; }
@@ -65,7 +64,7 @@
         button.secondary:hover { background: var(--bg-hover); color: var(--text-main); }
         .flex-row { display: flex; gap: 10px; margin-bottom: 20px; }
 
-        /* --- Custom Dropdown UI --- */
+        /* --- Dropdown UI --- */
         .custom-select-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
         .custom-select { padding: 12px 15px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 15px;}
         .custom-options { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; margin-top: 5px; z-index: 10; max-height: 200px; overflow-y: auto; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
@@ -73,11 +72,9 @@
         .custom-option { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .custom-option:hover { background: var(--bg-hover); }
 
-        /* --- Elements --- */
+        /* --- History & Elements --- */
         .suggestion-box { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--accent); padding: 15px; border-radius: 8px; font-size: 14px; line-height: 1.6; }
         .date-header { font-size: 14px; font-weight: 600; color: var(--text-muted); margin: 25px 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-        
-        /* Upgraded Expense Row */
         .expense-row { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-input); border-radius: 10px; margin-bottom: 10px; border-left: 4px solid transparent; transition: 0.2s; border: 1px solid var(--border);}
         .expense-row:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
         .cat-badge { background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; color: #e2e8f0; display: inline-block;}
@@ -94,20 +91,24 @@
         .calendar-day.today { background: rgba(59, 130, 246, 0.15); border: 1px solid var(--accent); }
         .day-number { font-size: 15px; font-weight: 500;}
         .day-expense { font-size: 12px; color: #f87171; margin-top: 5px; font-weight: 700; }
-        
         .calendar-notice { display: none; background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 12px; border-radius: 8px; text-align: center; font-size: 14px; margin-bottom: 20px; font-weight: 600; border: 1px solid rgba(59, 130, 246, 0.3);}
         .calendar-notice.active { display: block; }
         
-        /* Settings List */
         .setting-cat-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: var(--bg-input); border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border);}
+        
+        /* Dashboard Totals UI */
+        .balance-board { display: flex; justify-content: space-between; text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border); }
+        .balance-col { flex: 1; }
+        .balance-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 5px;}
+        .balance-val { font-size: 22px; font-weight: 700; }
+        .val-danger { color: #f87171; }
+        .val-success { color: #34d399; }
     </style>
 </head>
 <body>
 
-<!-- Mobile Overlay -->
 <div class="overlay" id="mobile-overlay" onclick="toggleSidebar()"></div>
 
-<!-- Sidebar Menu -->
 <div class="sidebar" id="sidebar">
     <h2>ProTracker</h2>
     <div class="nav-item active" onclick="switchTab('home', this)">🏠 Home</div>
@@ -117,20 +118,16 @@
 </div>
 
 <div class="main-content">
-    <!-- Mobile Header -->
     <div class="mobile-header">
         <h2 style="margin:0; font-size:18px; color: var(--text-main);">ProTracker</h2>
         <button class="menu-btn" onclick="toggleSidebar()">☰</button>
     </div>
     
     <div class="scrollable-area">
-        <!-- HOME TAB -->
         <div id="home" class="tab-content active">
             <div class="dashboard-grid">
-                <!-- Add Expense Area -->
                 <div class="card">
                     <h2 class="card-title">📝 Record Expense</h2>
-                    
                     <div id="calendar-override-notice" class="calendar-notice">
                         Adding expense for: <span id="override-date-text"></span>
                     </div>
@@ -153,22 +150,26 @@
                     <button onclick="addExpense()">Record Transaction</button>
                 </div>
 
-                <!-- Analytics Area -->
                 <div style="display: flex; flex-direction: column; gap: 20px;">
                     <div class="card">
-                        <h2 class="card-title">💡 Smart Suggestion</h2>
-                        <div class="suggestion-box" id="suggestion-text"></div>
-                    </div>
-                    <div class="card">
                         <h2 class="card-title">📊 Monthly Overview</h2>
-                        <div style="height: 200px; width: 100%;"><canvas id="expenseChart"></canvas></div>
-                        <h3 style="text-align: center; margin-top: 20px; font-size: 22px;" id="total-spent-display">RM 0.00</h3>
+                        <div style="height: 180px; width: 100%;"><canvas id="expenseChart"></canvas></div>
+                        
+                        <div class="balance-board">
+                            <div class="balance-col" style="border-right: 1px solid var(--border);">
+                                <div class="balance-label">Total Used</div>
+                                <div class="balance-val val-danger" id="total-spent-display">RM 0.00</div>
+                            </div>
+                            <div class="balance-col">
+                                <div class="balance-label">Remaining</div>
+                                <div class="balance-val val-success" id="total-left-display">RM 0.00</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- HISTORY TAB -->
         <div id="history" class="tab-content">
             <div class="card" style="max-width: 800px; margin: 0 auto;">
                 <h2 class="card-title">All Transactions</h2>
@@ -176,7 +177,6 @@
             </div>
         </div>
 
-        <!-- CALENDAR TAB -->
         <div id="calendar" class="tab-content">
             <div class="card" style="max-width: 800px; margin: 0 auto;">
                 <div class="calendar-header">
@@ -184,7 +184,6 @@
                     <h2 id="calendar-month-year" style="margin:0; font-size: 18px;">Month Year</h2>
                     <button style="width: auto; padding: 8px 15px;" onclick="changeMonth(1)">▶</button>
                 </div>
-                
                 <div class="calendar-grid">
                     <div class="day-name">Sun</div><div class="day-name">Mon</div><div class="day-name">Tue</div>
                     <div class="day-name">Wed</div><div class="day-name">Thu</div><div class="day-name">Fri</div><div class="day-name">Sat</div>
@@ -193,38 +192,44 @@
             </div>
         </div>
 
-        <!-- SETTINGS TAB -->
         <div id="settings" class="tab-content">
             <div class="dashboard-grid">
-                <!-- Manage Categories -->
-                <div class="card">
-                    <h2 class="card-title">🏷️ Add New Category</h2>
-                    
-                    <div class="flex-row" style="margin-bottom: 10px;">
-                        <div style="flex: 1;">
-                            <label>Symbol (Optional)</label>
-                            <input type="text" id="set-cat-emoji" placeholder="e.g. ☕" maxlength="2">
-                        </div>
-                        <div style="flex: 3;">
-                            <label>Category Name</label>
-                            <input type="text" id="set-cat-name" placeholder="e.g. Wifi, Medic...">
-                        </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="card">
+                        <h2 class="card-title">💰 Financial Profile</h2>
+                        <label>Monthly Income / Budget (RM)</label>
+                        <input type="number" id="set-income" placeholder="e.g. 3000" oninput="saveIncome()">
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: -10px;">
+                            This sets your total budget to calculate your "Remaining" money on the Home tab.
+                        </p>
                     </div>
-                    <p style="font-size: 12px; color: var(--text-muted); margin-top: -5px; margin-bottom: 20px;">
-                        *If you leave the symbol blank, the app will try to auto-detect one for you.
-                    </p>
-                    <button onclick="addNewCategory()">+ Save Category</button>
+
+                    <div class="card">
+                        <h2 class="card-title">🏷️ Add New Category</h2>
+                        <div class="flex-row" style="margin-bottom: 10px;">
+                            <div style="flex: 1;">
+                                <label>Symbol</label>
+                                <input type="text" id="set-cat-emoji" placeholder="e.g. ☕" maxlength="2">
+                            </div>
+                            <div style="flex: 3;">
+                                <label>Category Name</label>
+                                <input type="text" id="set-cat-name" placeholder="e.g. Badminton, Fries...">
+                            </div>
+                        </div>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: -5px; margin-bottom: 20px;">
+                            *Leave symbol blank to let the Smart System auto-detect it!
+                        </p>
+                        <button onclick="addNewCategory()">+ Save Category</button>
+                    </div>
                 </div>
 
-                <!-- Existing Categories List -->
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
                         <h2 class="card-title" style="border: none; padding: 0; margin: 0;">📂 Manage Categories</h2>
                         <button class="secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="resetCategories()">Reset Defaults</button>
                     </div>
-                    <div id="settings-cat-list" style="max-height: 400px; overflow-y: auto;">
-                        <!-- Injected via JS -->
-                    </div>
+                    <div id="settings-cat-list" style="max-height: 400px; overflow-y: auto;"></div>
                 </div>
             </div>
         </div>
@@ -236,37 +241,29 @@
     let expenses = JSON.parse(localStorage.getItem('pro_exp_data')) || [];
     let categories = JSON.parse(localStorage.getItem('pro_cat_data')) || ['🍔 Food', '🚗 Transport', '🛍️ Shopping', '🧾 Bills'];
     
-    // --- MASSIVE SMART DICTIONARY UPGRADE ---
+    // --- THE MASSIVE "SMART DICTIONARY" UPGRADE ---
+    // It will search every word you type against this massive list.
     const smartDictionary = {
+        // Clothing & Wearables
+        'cloth': '👕', 'clothes': '👕', 'shirt': '👔', 'pants': '👖', 'dress': '👗', 'shoes': '👟', 'shoe': '👞', 'jacket': '🧥', 'sock': '🧦', 'glasses': '👓', 'watch': '⌚',
+        // Sports & Hobbies
+        'badminton': '🏸', 'exercise': '🏃', 'gym': '🏋️', 'sport': '⚽', 'soccer': '⚽', 'football': '🏈', 'basketball': '🏀', 'tennis': '🎾', 'swim': '🏊', 'bike': '🚴', 'bicycle': '🚲', 'run': '🏃', 'yoga': '🧘',
+        // Fast Food & Snacks
+        'fries': '🍟', 'mcdonalds': '🍟', 'kfc': '🍗', 'burger': '🍔', 'pizza': '🍕', 'hotdog': '🌭', 'snack': '🍿', 'chip': '🥔', 'candy': '🍬', 'chocolate': '🍫', 'icecream': '🍦', 'sweet': '🍭',
         // Medical / Health
-        'medic': '🩹', 'medical': '🏥', 'hospital': '🏥', 'clinic': '🏥', 'doctor': '👨‍⚕️',
-        'medicine': '💊', 'pharmacy': '💊', 'bandage': '🩹', 'health': '⚕️', 'dental': '🦷',
-        
+        'medic': '🩹', 'medical': '🏥', 'hospital': '🏥', 'clinic': '🏥', 'doctor': '👨‍⚕️', 'medicine': '💊', 'pharmacy': '💊', 'bandage': '🩹', 'health': '⚕️', 'dental': '🦷', 'dentist': '🦷',
         // Tech / Utilities
-        'wifi': '🛜', 'router': '📡', 'internet': '🌐', 'data': '📶', 'phone': '📱', 'mobile': '📱',
-        'water': '💧', 'electricity': '⚡', 'electric': '⚡', 'power': '🔌', 'bill': '🧾',
-        
+        'wifi': '🛜', 'router': '📡', 'internet': '🌐', 'data': '📶', 'phone': '📱', 'mobile': '📱', 'laptop': '💻', 'computer': '🖥️', 'water': '💧', 'electricity': '⚡', 'electric': '⚡', 'power': '🔌', 'bill': '🧾',
         // Food / Drink
-        'coffee': '☕', 'cafe': '☕', 'starbucks': '☕', 'boba': '🧋', 'drink': '🥤',
-        'food': '🍔', 'restaurant': '🍽️', 'pizza': '🍕', 'kfc': '🍗', 'mcdonalds': '🍔',
-        'burger': '🍔', 'sushi': '🍣', 'noodle': '🍜', 'snack': '🍫', 'breakfast': '🍳',
-        
+        'coffee': '☕', 'cafe': '☕', 'starbucks': '☕', 'boba': '🧋', 'drink': '🥤', 'tea': '🍵', 'water': '💧', 'food': '🍽️', 'restaurant': '🍽️', 'sushi': '🍣', 'noodle': '🍜', 'breakfast': '🍳', 'lunch': '🍱', 'dinner': '🥘',
         // Transport
-        'transport': '🚗', 'grab': '🚗', 'petrol': '⛽', 'gas': '⛽', 'toll': '🛣️',
-        'parking': '🅿️', 'bus': '🚌', 'train': '🚆', 'flight': '✈️', 'taxi': '🚕',
-        
-        // Shopping / Personal
-        'shopping': '🛍️', 'clothes': '👕', 'shoes': '👟', 'gift': '🎁', 'beauty': '💄',
-        
+        'transport': '🚗', 'grab': '🚗', 'uber': '🚗', 'petrol': '⛽', 'gas': '⛽', 'toll': '🛣️', 'parking': '🅿️', 'bus': '🚌', 'train': '🚆', 'flight': '✈️', 'plane': '✈️', 'taxi': '🚕', 'car': '🚙',
+        // Shopping & Brands
+        'shopping': '🛍️', 'shopee': '🛍️', 'lazada': '📦', 'amazon': '📦', 'gift': '🎁', 'beauty': '💄', 'makeup': '💄', 'grocery': '🛒', 'groceries': '🛒', 'market': '🥬', 'supermarket': '🛒',
         // Entertainment / Leisure
-        'entertainment': '🎮', 'movie': '🍿', 'cinema': '🍿', 'game': '🎮', 'steam': '🕹️',
-        'sport': '⚽', 'gym': '🏋️', 'music': '🎵', 'spotify': '🎧', 'netflix': '📺',
-        
-        // Groceries / Home
-        'groceries': '🛒', 'market': '🥬', 'supermarket': '🛒', 'home': '🏠', 'rent': '🔑',
-        
-        // Others
-        'salary': '💰', 'income': '💵', 'tax': '📉', 'insurance': '🛡️', 'pet': '🐾'
+        'entertainment': '🎮', 'movie': '🍿', 'cinema': '🍿', 'game': '🎮', 'steam': '🕹️', 'music': '🎵', 'spotify': '🎧', 'netflix': '📺', 'youtube': '▶️', 'book': '📚',
+        // Home & Others
+        'home': '🏠', 'rent': '🔑', 'house': '🏡', 'salary': '💰', 'income': '💵', 'tax': '📉', 'insurance': '🛡️', 'pet': '🐾', 'dog': '🐕', 'cat': '🐈'
     };
 
     let chartInstance = null;
@@ -275,55 +272,50 @@
     let customOverrideDate = null; 
 
     window.onload = function() {
+        document.getElementById('set-income').value = localStorage.getItem('pro_income') || '';
         renderCategories();
         updateDashboard();
         renderCalendar();
     };
 
-    // --- Mobile Sidebar Logic ---
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('mobile-overlay');
-        sidebar.classList.toggle('open');
-        overlay.classList.toggle('open');
+    function saveIncome() {
+        localStorage.setItem('pro_income', document.getElementById('set-income').value);
+        updateDashboard();
     }
 
-    // --- Tab Navigation ---
+    // --- Tab Navigation & UI ---
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('mobile-overlay').classList.toggle('open');
+    }
+
     function switchTab(tabId, element) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-        
         document.getElementById(tabId).classList.add('active');
         element.classList.add('active');
         
         if(window.innerWidth <= 768) toggleSidebar();
-        
         if(tabId !== 'home') {
             customOverrideDate = null;
             document.getElementById('calendar-override-notice').classList.remove('active');
         }
     }
 
-    // --- Custom Dropdown Logic ---
     function toggleDropdown() { document.getElementById('category-dropdown').classList.toggle('show'); }
     window.onclick = function(event) { if (!event.target.closest('.custom-select-wrapper')) { document.getElementById('category-dropdown').classList.remove('show'); } }
 
     function renderCategories() {
-        // Render Home Dropdown
         const dropdown = document.getElementById('category-dropdown');
         dropdown.innerHTML = '';
         categories.forEach((cat) => {
-            const div = document.createElement('div');
-            div.className = 'custom-option';
-            div.innerText = cat;
-            div.onclick = () => selectCategory(cat);
-            dropdown.appendChild(div);
+            const div = document.createElement('div'); div.className = 'custom-option'; div.innerText = cat;
+            div.onclick = () => selectCategory(cat); dropdown.appendChild(div);
         });
 
         if(!categories.includes(currentCategory) && categories.length > 0) currentCategory = categories[0];
         document.getElementById('cat-text').innerText = currentCategory || 'No Categories';
 
-        // Render Settings List
         const setList = document.getElementById('settings-cat-list');
         setList.innerHTML = '';
         categories.forEach((cat, index) => {
@@ -331,14 +323,13 @@
                 <div class="setting-cat-row">
                     <span style="font-weight: 500;">${cat}</span>
                     <button class="delete-btn" style="padding: 4px 10px; margin:0;" onclick="deleteCategory(${index})">Delete</button>
-                </div>
-            `;
+                </div>`;
         });
     }
 
     function selectCategory(cat) { currentCategory = cat; document.getElementById('cat-text').innerText = cat; document.getElementById('category-dropdown').classList.remove('show'); }
     
-    // --- SMART ADD CATEGORY LOGIC ---
+    // --- ADVANCED SMART ADD CATEGORY LOGIC ---
     function addNewCategory() {
         const emojiInput = document.getElementById('set-cat-emoji').value.trim();
         const nameInput = document.getElementById('set-cat-name').value.trim();
@@ -350,12 +341,16 @@
         if (emojiInput) {
             finalEmoji = emojiInput;
         } else {
-            const searchWord = nameInput.toLowerCase();
-            for (const [keyword, emoji] of Object.entries(smartDictionary)) {
-                if (searchWord.includes(keyword)) {
-                    finalEmoji = emoji;
-                    break;
+            // Split the input into words and check EACH word against the massive dictionary
+            const words = nameInput.toLowerCase().split(' ');
+            for (let w of words) {
+                for (const [keyword, emoji] of Object.entries(smartDictionary)) {
+                    if (w.includes(keyword)) {
+                        finalEmoji = emoji;
+                        break;
+                    }
                 }
+                if(finalEmoji) break; // Stop looking once we find a match
             }
         }
         
@@ -377,18 +372,13 @@
     
     function deleteCategory(index) { 
         if(categories.length === 1) return alert("You must have at least one category.");
-        if(confirm("Delete this category?")) { 
-            categories.splice(index, 1); 
-            localStorage.setItem('pro_cat_data', JSON.stringify(categories)); 
-            renderCategories(); 
-        } 
+        if(confirm("Delete this category?")) { categories.splice(index, 1); localStorage.setItem('pro_cat_data', JSON.stringify(categories)); renderCategories(); } 
     }
 
     function resetCategories() {
         if(confirm("This will replace your current categories with the default ones. Continue?")) {
             categories = ['🍔 Food', '🚗 Transport', '🛍️ Shopping', '🧾 Bills'];
-            localStorage.setItem('pro_cat_data', JSON.stringify(categories));
-            renderCategories();
+            localStorage.setItem('pro_cat_data', JSON.stringify(categories)); renderCategories();
         }
     }
 
@@ -403,28 +393,18 @@
         if (!amount || amount <= 0) return alert("Enter valid amount");
         if (!currentCategory) return alert("Please create a category in settings first.");
 
-        let timestamp = customOverrideDate;
-        if (!timestamp) {
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            timestamp = now.toISOString().slice(0, 16);
-        }
+        let timestamp = customOverrideDate || new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 
         expenses.push({ id: Date.now(), amount, category: currentCategory, note, date: timestamp });
         localStorage.setItem('pro_exp_data', JSON.stringify(expenses));
         
-        document.getElementById('exp-amount').value = '';
-        document.getElementById('exp-note').value = '';
+        document.getElementById('exp-amount').value = ''; document.getElementById('exp-note').value = '';
+        customOverrideDate = null; document.getElementById('calendar-override-notice').classList.remove('active');
         
-        customOverrideDate = null;
-        document.getElementById('calendar-override-notice').classList.remove('active');
-        
-        updateDashboard();
-        renderCalendar();
+        updateDashboard(); renderCalendar();
         
         const btn = document.querySelector('#home button');
-        btn.innerText = "✅ Saved!";
-        btn.style.background = "#10b981";
+        btn.innerText = "✅ Saved!"; btn.style.background = "#10b981";
         setTimeout(() => { btn.innerText = "Record Transaction"; btn.style.background = "var(--accent)"; }, 1500);
     }
     
@@ -434,18 +414,22 @@
     function updateDashboard() {
         let total = 0; const catTotals = {};
         expenses.forEach(exp => { total += exp.amount; catTotals[exp.category] = (catTotals[exp.category] || 0) + exp.amount; });
+        
+        // Update Total Used
         document.getElementById('total-spent-display').innerText = 'RM ' + total.toFixed(2);
         
-        renderHistory(); renderChart(catTotals); generateSuggestion(catTotals, total);
-    }
-
-    function generateSuggestion(catTotals, totalSpent) {
-        const box = document.getElementById('suggestion-text');
-        if (expenses.length === 0) return box.innerHTML = "Add some expenses to see insights!";
-        let maxCat = ''; let maxAmt = 0;
-        for (const [cat, amt] of Object.entries(catTotals)) { if (amt > maxAmt) { maxAmt = amt; maxCat = cat; } }
-        const pct = Math.round((maxAmt / totalSpent) * 100);
-        box.innerHTML = `Your highest expense is <strong>${maxCat}</strong>, taking up <strong>${pct}%</strong> of your total spending (RM ${maxAmt.toFixed(2)}). <br><br> 💡 <em>Tip: Try to find one small way to reduce your ${maxCat} spending this week to boost your savings!</em>`;
+        // Calculate & Update Remaining Balance
+        const income = parseFloat(localStorage.getItem('pro_income')) || 0;
+        const remaining = income - total;
+        
+        const leftDisplay = document.getElementById('total-left-display');
+        leftDisplay.innerText = 'RM ' + remaining.toFixed(2);
+        
+        // Change color to red if you spend more than your income
+        if (remaining < 0) { leftDisplay.style.color = '#f87171'; } 
+        else { leftDisplay.style.color = '#34d399'; }
+        
+        renderHistory(); renderChart(catTotals); 
     }
 
     function renderHistory() {
@@ -454,7 +438,6 @@
         if(expenses.length === 0) return list.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>No transactions yet.</p>";
 
         const sorted = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
-        
         const grouped = {};
         sorted.forEach(exp => {
             const dateStr = new Date(exp.date).toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -479,8 +462,7 @@
                             <span style="font-weight:700; font-size:18px; color: var(--text-main);">RM ${exp.amount.toFixed(2)}</span>
                             <button class="delete-btn" onclick="deleteExpense(${exp.id})">✕</button>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
             list.innerHTML += html;
         }
@@ -490,12 +472,11 @@
         const ctx = document.getElementById('expenseChart').getContext('2d');
         if (chartInstance) chartInstance.destroy();
         if (Object.keys(catTotals).length === 0) {
-            chartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: ['Empty'], datasets: [{ data: [1], backgroundColor: ['#1f2937'], borderWidth:0 }] }, options: { plugins: { tooltip: {enabled:false} } } });
-            return;
+            chartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: ['Empty'], datasets: [{ data: [1], backgroundColor: ['#1f2937'], borderWidth:0 }] }, options: { plugins: { tooltip: {enabled:false} } } }); return;
         }
         chartInstance = new Chart(ctx, {
             type: 'doughnut',
-            data: { labels: Object.keys(catTotals), datasets: [{ data: Object.values(catTotals), backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'], borderWidth: 2, borderColor: '#151b2b' }] },
+            data: { labels: Object.keys(catTotals), datasets: [{ data: Object.values(catTotals), backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e', '#84cc16'], borderWidth: 2, borderColor: '#151b2b' }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: {color: '#9ca3af'} } } }
         });
     }
@@ -510,7 +491,6 @@
         
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        
         const grid = document.getElementById('calendar-days');
         grid.innerHTML = '';
         const todayStr = new Date().toDateString();
@@ -524,15 +504,11 @@
             const dayExpenses = expenses.filter(e => new Date(e.date).toDateString() === thisDayStr);
             const dayTotal = dayExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
-            let classes = 'calendar-day';
-            if (thisDayStr === todayStr) classes += ' today';
-
-            const div = document.createElement('div');
-            div.className = classes;
+            let classes = 'calendar-day'; if (thisDayStr === todayStr) classes += ' today';
+            const div = document.createElement('div'); div.className = classes;
             
             let innerHTML = `<span class="day-number">${i}</span>`;
             if (dayTotal > 0) innerHTML += `<span class="day-expense">RM ${dayTotal.toFixed(0)}</span>`;
-            
             div.innerHTML = innerHTML;
             
             div.onclick = () => {
