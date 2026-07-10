@@ -64,8 +64,6 @@
         button.secondary:hover { background: var(--bg-hover); color: var(--text-main); }
         .flex-row { display: flex; gap: 10px; margin-bottom: 20px; }
         
-        .month-filter { width: auto; margin-bottom: 0; padding: 8px 15px; font-weight: 600; cursor: pointer; color: var(--accent); border-color: rgba(59, 130, 246, 0.5); background: rgba(59, 130, 246, 0.05); }
-
         /* --- Dropdown UI --- */
         .custom-select-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
         .custom-select { padding: 12px 15px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 15px;}
@@ -73,6 +71,22 @@
         .custom-options.show { display: block; }
         .custom-option { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .custom-option:hover { background: var(--bg-hover); }
+
+        /* --- Custom Month Picker UI --- */
+        .custom-month-btn { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 10px; font-size: 15px; width: auto; transition: 0.2s; }
+        .custom-month-btn:hover { border-color: var(--accent); background: var(--bg-hover); }
+        
+        .month-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 100; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.2s; }
+        .month-modal.show { display: flex; opacity: 1; }
+        .month-modal-content { background: var(--bg-card); padding: 24px; border-radius: 16px; width: 320px; box-shadow: 0 15px 30px rgba(0,0,0,0.5); border: 1px solid var(--border); transform: scale(0.95); transition: transform 0.2s; }
+        .month-modal.show .month-modal-content { transform: scale(1); }
+        .mp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 18px; font-weight: bold; }
+        .mp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .mp-month { padding: 14px 0; text-align: center; background: var(--bg-input); border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: 600; border: 1px solid transparent; color: var(--text-main); }
+        .mp-month:hover { border-color: var(--accent); background: rgba(59, 130, 246, 0.1); }
+        .mp-month.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .mp-year-btn { background: var(--bg-input); border: none; color: var(--text-main); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; width: auto;}
+        .mp-year-btn:hover { background: var(--bg-hover); }
 
         /* --- History & Elements --- */
         .suggestion-box { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--accent); padding: 15px; border-radius: 8px; font-size: 14px; line-height: 1.6; }
@@ -111,6 +125,18 @@
 </head>
 <body>
 
+<div class="month-modal" id="month-modal">
+    <div class="month-modal-content">
+        <div class="mp-header">
+            <button class="mp-year-btn" onclick="changePickerYear(-1)">◀</button>
+            <span id="mp-year-display">2026</span>
+            <button class="mp-year-btn" onclick="changePickerYear(1)">▶</button>
+        </div>
+        <div class="mp-grid" id="mp-grid">
+            </div>
+    </div>
+</div>
+
 <div class="overlay" id="mobile-overlay" onclick="toggleSidebar()"></div>
 
 <div class="sidebar" id="sidebar">
@@ -131,7 +157,7 @@
         <div id="home" class="tab-content active">
             <div class="header-section">
                 <h1 style="margin: 0; font-size: 24px;">Dashboard</h1>
-                <input type="month" id="home-month-filter" class="month-filter" onchange="updateFilterMonth(this.value)">
+                <button class="custom-month-btn" onclick="openMonthPicker()">📅 <span id="home-month-display">Select Month</span></button>
             </div>
             
             <div class="dashboard-grid">
@@ -188,7 +214,7 @@
             <div class="card" style="max-width: 800px; margin: 0 auto;">
                 <div class="header-section" style="margin-bottom: 10px;">
                     <h2 class="card-title" style="margin: 0; border: none; padding: 0;">All Transactions</h2>
-                    <input type="month" id="history-month-filter" class="month-filter" onchange="updateFilterMonth(this.value)">
+                    <button class="custom-month-btn" onclick="openMonthPicker()">📅 <span id="history-month-display">Select Month</span></button>
                 </div>
                 <div id="history-list"></div>
             </div>
@@ -257,7 +283,7 @@
     // System Data
     let expenses = JSON.parse(localStorage.getItem('pro_exp_data')) || [];
     let categories = JSON.parse(localStorage.getItem('pro_cat_data')) || ['🍔 Food', '🚗 Transport', '🛍️ Shopping', '🧾 Bills'];
-    let currentFilterMonth = new Date().toISOString().slice(0, 7); // Default to current month (YYYY-MM)
+    let currentFilterMonth = ''; 
     
     // Massive Smart Dictionary
     const smartDictionary = {
@@ -278,30 +304,84 @@
     let currentDate = new Date(); 
     let customOverrideDate = null; 
 
+    // --- CUSTOM MONTH PICKER LOGIC ---
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    let pickerYear = new Date().getFullYear();
+
     window.onload = function() {
         document.getElementById('set-income').value = localStorage.getItem('pro_income') || '';
-        document.getElementById('home-month-filter').value = currentFilterMonth;
-        document.getElementById('history-month-filter').value = currentFilterMonth;
-        
         renderCategories();
-        updateDashboard();
-        renderCalendar();
+        
+        // Initialize Default Filter to Current Month
+        const initialY = new Date().getFullYear();
+        const initialM = String(new Date().getMonth() + 1).padStart(2, '0');
+        updateFilterMonth(`${initialY}-${initialM}`);
     };
 
-    // --- Filter Logic ---
     function updateFilterMonth(val) {
         currentFilterMonth = val;
-        document.getElementById('home-month-filter').value = val;
-        document.getElementById('history-month-filter').value = val;
-        
-        // Sync Calendar to the newly selected month filter
         const [y, m] = val.split('-');
+        const displayStr = `${monthNames[parseInt(m)-1]} ${y}`;
+        
+        // Update both buttons
+        document.getElementById('home-month-display').innerText = displayStr;
+        document.getElementById('history-month-display').innerText = displayStr;
+        
+        // Sync Calendar
         currentDate.setFullYear(parseInt(y));
         currentDate.setMonth(parseInt(m) - 1);
         
         updateDashboard();
         renderCalendar();
     }
+
+    function openMonthPicker() {
+        const [y, m] = currentFilterMonth.split('-');
+        pickerYear = parseInt(y);
+        renderMonthPickerUI(parseInt(m) - 1);
+        document.getElementById('month-modal').classList.add('show');
+    }
+
+    function closeMonthPicker() {
+        document.getElementById('month-modal').classList.remove('show');
+    }
+
+    function changePickerYear(dir) {
+        pickerYear += dir;
+        renderMonthPickerUI();
+    }
+
+    function renderMonthPickerUI(activeMonthIndex = -1) {
+        document.getElementById('mp-year-display').innerText = pickerYear;
+        const grid = document.getElementById('mp-grid');
+        grid.innerHTML = '';
+        
+        const [currY, currM] = currentFilterMonth.split('-');
+        const highlightMonth = (pickerYear === parseInt(currY)) ? (parseInt(currM) - 1) : activeMonthIndex;
+
+        monthNames.forEach((mName, index) => {
+            const btn = document.createElement('div');
+            btn.className = 'mp-month' + (index === highlightMonth ? ' active' : '');
+            btn.innerText = mName;
+            btn.onclick = () => {
+                const m = String(index + 1).padStart(2, '0');
+                updateFilterMonth(`${pickerYear}-${m}`);
+                closeMonthPicker();
+            };
+            grid.appendChild(btn);
+        });
+    }
+
+    // Close Modals/Dropdowns if clicked outside
+    window.onclick = function(event) { 
+        if (!event.target.closest('.custom-select-wrapper')) { 
+            document.getElementById('category-dropdown').classList.remove('show'); 
+        }
+        if (event.target.id === 'month-modal') {
+            closeMonthPicker();
+        }
+    }
+
 
     function saveIncome() {
         localStorage.setItem('pro_income', document.getElementById('set-income').value);
@@ -328,7 +408,6 @@
     }
 
     function toggleDropdown() { document.getElementById('category-dropdown').classList.toggle('show'); }
-    window.onclick = function(event) { if (!event.target.closest('.custom-select-wrapper')) { document.getElementById('category-dropdown').classList.remove('show'); } }
 
     function renderCategories() {
         const dropdown = document.getElementById('category-dropdown');
@@ -491,7 +570,6 @@
         });
 
         for (const [date, items] of Object.entries(grouped)) {
-            // Updated Date Header to show Daily Total!
             let html = `
                 <div class="date-header">
                     <span>${date}</span>
@@ -536,12 +614,13 @@
     function changeMonth(dir) { 
         currentDate.setMonth(currentDate.getMonth() + dir); 
         
-        // Sync the Global Filter to match the calendar navigation
         const y = currentDate.getFullYear();
         const m = String(currentDate.getMonth() + 1).padStart(2, '0');
         currentFilterMonth = `${y}-${m}`;
-        document.getElementById('home-month-filter').value = currentFilterMonth;
-        document.getElementById('history-month-filter').value = currentFilterMonth;
+        
+        const displayStr = `${monthNames[currentDate.getMonth()]} ${y}`;
+        document.getElementById('home-month-display').innerText = displayStr;
+        document.getElementById('history-month-display').innerText = displayStr;
         
         updateDashboard();
         renderCalendar(); 
