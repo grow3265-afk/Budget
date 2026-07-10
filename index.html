@@ -152,6 +152,11 @@
 
                 <div style="display: flex; flex-direction: column; gap: 20px;">
                     <div class="card">
+                        <h2 class="card-title">💡 Smart Suggestion</h2>
+                        <div class="suggestion-box" id="suggestion-text"></div>
+                    </div>
+
+                    <div class="card">
                         <h2 class="card-title">📊 Monthly Overview</h2>
                         <div style="height: 180px; width: 100%;"><canvas id="expenseChart"></canvas></div>
                         
@@ -241,28 +246,17 @@
     let expenses = JSON.parse(localStorage.getItem('pro_exp_data')) || [];
     let categories = JSON.parse(localStorage.getItem('pro_cat_data')) || ['🍔 Food', '🚗 Transport', '🛍️ Shopping', '🧾 Bills'];
     
-    // --- THE MASSIVE "SMART DICTIONARY" UPGRADE ---
-    // It will search every word you type against this massive list.
+    // Massive Smart Dictionary
     const smartDictionary = {
-        // Clothing & Wearables
         'cloth': '👕', 'clothes': '👕', 'shirt': '👔', 'pants': '👖', 'dress': '👗', 'shoes': '👟', 'shoe': '👞', 'jacket': '🧥', 'sock': '🧦', 'glasses': '👓', 'watch': '⌚',
-        // Sports & Hobbies
         'badminton': '🏸', 'exercise': '🏃', 'gym': '🏋️', 'sport': '⚽', 'soccer': '⚽', 'football': '🏈', 'basketball': '🏀', 'tennis': '🎾', 'swim': '🏊', 'bike': '🚴', 'bicycle': '🚲', 'run': '🏃', 'yoga': '🧘',
-        // Fast Food & Snacks
         'fries': '🍟', 'mcdonalds': '🍟', 'kfc': '🍗', 'burger': '🍔', 'pizza': '🍕', 'hotdog': '🌭', 'snack': '🍿', 'chip': '🥔', 'candy': '🍬', 'chocolate': '🍫', 'icecream': '🍦', 'sweet': '🍭',
-        // Medical / Health
         'medic': '🩹', 'medical': '🏥', 'hospital': '🏥', 'clinic': '🏥', 'doctor': '👨‍⚕️', 'medicine': '💊', 'pharmacy': '💊', 'bandage': '🩹', 'health': '⚕️', 'dental': '🦷', 'dentist': '🦷',
-        // Tech / Utilities
         'wifi': '🛜', 'router': '📡', 'internet': '🌐', 'data': '📶', 'phone': '📱', 'mobile': '📱', 'laptop': '💻', 'computer': '🖥️', 'water': '💧', 'electricity': '⚡', 'electric': '⚡', 'power': '🔌', 'bill': '🧾',
-        // Food / Drink
         'coffee': '☕', 'cafe': '☕', 'starbucks': '☕', 'boba': '🧋', 'drink': '🥤', 'tea': '🍵', 'water': '💧', 'food': '🍽️', 'restaurant': '🍽️', 'sushi': '🍣', 'noodle': '🍜', 'breakfast': '🍳', 'lunch': '🍱', 'dinner': '🥘',
-        // Transport
         'transport': '🚗', 'grab': '🚗', 'uber': '🚗', 'petrol': '⛽', 'gas': '⛽', 'toll': '🛣️', 'parking': '🅿️', 'bus': '🚌', 'train': '🚆', 'flight': '✈️', 'plane': '✈️', 'taxi': '🚕', 'car': '🚙',
-        // Shopping & Brands
         'shopping': '🛍️', 'shopee': '🛍️', 'lazada': '📦', 'amazon': '📦', 'gift': '🎁', 'beauty': '💄', 'makeup': '💄', 'grocery': '🛒', 'groceries': '🛒', 'market': '🥬', 'supermarket': '🛒',
-        // Entertainment / Leisure
         'entertainment': '🎮', 'movie': '🍿', 'cinema': '🍿', 'game': '🎮', 'steam': '🕹️', 'music': '🎵', 'spotify': '🎧', 'netflix': '📺', 'youtube': '▶️', 'book': '📚',
-        // Home & Others
         'home': '🏠', 'rent': '🔑', 'house': '🏡', 'salary': '💰', 'income': '💵', 'tax': '📉', 'insurance': '🛡️', 'pet': '🐾', 'dog': '🐕', 'cat': '🐈'
     };
 
@@ -283,7 +277,7 @@
         updateDashboard();
     }
 
-    // --- Tab Navigation & UI ---
+    // Tab Navigation & UI
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('open');
         document.getElementById('mobile-overlay').classList.toggle('open');
@@ -329,7 +323,6 @@
 
     function selectCategory(cat) { currentCategory = cat; document.getElementById('cat-text').innerText = cat; document.getElementById('category-dropdown').classList.remove('show'); }
     
-    // --- ADVANCED SMART ADD CATEGORY LOGIC ---
     function addNewCategory() {
         const emojiInput = document.getElementById('set-cat-emoji').value.trim();
         const nameInput = document.getElementById('set-cat-name').value.trim();
@@ -341,7 +334,6 @@
         if (emojiInput) {
             finalEmoji = emojiInput;
         } else {
-            // Split the input into words and check EACH word against the massive dictionary
             const words = nameInput.toLowerCase().split(' ');
             for (let w of words) {
                 for (const [keyword, emoji] of Object.entries(smartDictionary)) {
@@ -350,7 +342,7 @@
                         break;
                     }
                 }
-                if(finalEmoji) break; // Stop looking once we find a match
+                if(finalEmoji) break; 
             }
         }
         
@@ -382,7 +374,7 @@
         }
     }
 
-    // --- Expense Logic ---
+    // Expense Logic
     function addExpense() {
         const amount = parseFloat(document.getElementById('exp-amount').value);
         let defaultNote = currentCategory;
@@ -410,26 +402,40 @@
     
     function deleteExpense(id) { expenses = expenses.filter(e => e.id !== id); localStorage.setItem('pro_exp_data', JSON.stringify(expenses)); updateDashboard(); renderCalendar(); }
 
-    // --- Dashboard & Analytics ---
+    // Dashboard & Analytics
     function updateDashboard() {
         let total = 0; const catTotals = {};
         expenses.forEach(exp => { total += exp.amount; catTotals[exp.category] = (catTotals[exp.category] || 0) + exp.amount; });
         
-        // Update Total Used
         document.getElementById('total-spent-display').innerText = 'RM ' + total.toFixed(2);
         
-        // Calculate & Update Remaining Balance
         const income = parseFloat(localStorage.getItem('pro_income')) || 0;
         const remaining = income - total;
         
         const leftDisplay = document.getElementById('total-left-display');
         leftDisplay.innerText = 'RM ' + remaining.toFixed(2);
         
-        // Change color to red if you spend more than your income
         if (remaining < 0) { leftDisplay.style.color = '#f87171'; } 
         else { leftDisplay.style.color = '#34d399'; }
         
-        renderHistory(); renderChart(catTotals); 
+        renderHistory(); renderChart(catTotals); generateSuggestion(catTotals, total, income);
+    }
+
+    // THE SUGGESTIONS ARE BACK!
+    function generateSuggestion(catTotals, totalSpent, income) {
+        const box = document.getElementById('suggestion-text');
+        if (expenses.length === 0) return box.innerHTML = "Add some expenses to see personalized insights!";
+        
+        let maxCat = ''; let maxAmt = 0;
+        for (const [cat, amt] of Object.entries(catTotals)) { if (amt > maxAmt) { maxAmt = amt; maxCat = cat; } }
+        const pct = Math.round((maxAmt / totalSpent) * 100);
+        
+        let warning = "";
+        if (income > 0 && totalSpent > income) {
+            warning = `<strong style="color: #f87171;">⚠️ Warning: You have exceeded your monthly budget!</strong><br><br>`;
+        }
+        
+        box.innerHTML = `${warning}Your highest expense is <strong>${maxCat}</strong>, taking up <strong>${pct}%</strong> of your total spending (RM ${maxAmt.toFixed(2)}). <br><br> 💡 <em>Tip: Try to find one small way to reduce your ${maxCat} spending to stay within your budget!</em>`;
     }
 
     function renderHistory() {
@@ -481,7 +487,7 @@
         });
     }
 
-    // --- Calendar Logic ---
+    // Calendar Logic
     function changeMonth(dir) { currentDate.setMonth(currentDate.getMonth() + dir); renderCalendar(); }
 
     function renderCalendar() {
