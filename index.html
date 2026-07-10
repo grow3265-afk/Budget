@@ -3,310 +3,377 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Expense & Savings Tracker</title>
-    <!-- We are importing a free tool called Chart.js to draw the circle chart -->
+    <title>Pro Expense Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text: #f8fafc;
-            --primary: #3b82f6;
-            --success: #22c55e;
+            --bg-base: #0b0f19;
+            --bg-card: #151b2b;
+            --bg-input: #1f2937;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
             --danger: #ef4444;
-            --border: #334155;
+            --success: #10b981;
+            --border: #2d3748;
         }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
         }
-        .container {
-            width: 100%;
-            max-width: 600px;
+
+        .container { width: 100%; max-width: 800px; }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
         }
-        .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
+        
+        .header h1 { margin: 0; font-size: 28px; font-weight: 700; background: linear-gradient(to right, #3b82f6, #8b5cf6); -webkit-background-clip: text; color: transparent; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        h2 { margin-top: 0; font-size: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        label { display: block; margin-bottom: 5px; font-size: 14px; color: #94a3b8; }
+
+        @media (max-width: 600px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        label { display: block; font-size: 13px; font-weight: 500; color: var(--text-muted); margin-bottom: 8px; }
+        
         input, select {
             width: 100%;
-            padding: 10px;
-            background: #0f172a;
+            padding: 12px 16px;
+            background: var(--bg-input);
             border: 1px solid var(--border);
-            border-radius: 6px;
-            color: white;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
             box-sizing: border-box;
-            margin-bottom: 10px;
+            transition: all 0.2s ease;
         }
+
+        input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+
+        .input-group { margin-bottom: 16px; }
+
+        .flex-row { display: flex; gap: 12px; align-items: flex-end; }
+
         button {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary);
+            padding: 12px 20px;
+            background: var(--accent);
             color: white;
             border: none;
-            border-radius: 6px;
-            font-weight: bold;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
-            margin-top: 10px;
+            transition: background 0.2s;
+            width: 100%;
         }
-        button:hover { background: #2563eb; }
-        .expense-item {
+
+        button:hover { background: var(--accent-hover); }
+        
+        button.secondary { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); width: auto; white-space: nowrap; }
+        button.secondary:hover { background: var(--border); }
+
+        .expense-row {
             display: flex;
             justify-content: space-between;
-            background: #0f172a;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 6px;
-            border-left: 4px solid var(--primary);
+            align-items: center;
+            padding: 16px;
+            background: var(--bg-input);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--accent);
+            transition: transform 0.2s;
         }
+
+        .expense-row:hover { transform: translateX(4px); }
+
+        .exp-details strong { display: block; font-size: 15px; margin-bottom: 4px; }
+        .exp-details span { font-size: 12px; color: var(--text-muted); }
+        
+        .exp-amount { font-weight: 700; font-size: 16px; text-align: right; }
+        
         .delete-btn {
-            background: var(--danger);
-            padding: 5px 10px;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            padding: 6px 10px;
+            border-radius: 6px;
             width: auto;
-            margin: 0;
+            margin-left: 15px;
         }
-        .suggestion-box {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid var(--primary);
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 15px;
-            line-height: 1.5;
-        }
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-        }
+        .delete-btn:hover { background: var(--danger); color: white; }
+
+        .chart-wrapper { height: 250px; width: 100%; display: flex; justify-content: center; }
+
+        /* Hidden class for toggling UI */
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1 style="text-align: center;">📊 My Smart Expense Tracker</h1>
-
-    <!-- Setup Section -->
-    <div class="card">
-        <h2>1. Monthly Setup</h2>
-        <div class="grid-2">
-            <div>
-                <label>Monthly Income ($)</label>
-                <input type="number" id="income" oninput="updateDashboard()" placeholder="e.g. 3000">
-            </div>
-            <div>
-                <label>Monthly Savings Goal ($)</label>
-                <input type="number" id="goal" oninput="updateDashboard()" placeholder="e.g. 500">
-            </div>
-        </div>
+    <div class="header">
+        <h1>Overview Dashboard</h1>
     </div>
 
-    <!-- Add Expense Section -->
-    <div class="card">
-        <h2>2. Add Daily Expense</h2>
-        <div class="grid-2">
-            <div>
+    <div class="dashboard-grid">
+        <div class="card">
+            <h2 class="card-title">📝 Record Expense</h2>
+            
+            <div class="input-group">
                 <label>Amount ($)</label>
-                <input type="number" id="exp-amount" placeholder="0.00">
+                <input type="number" id="exp-amount" placeholder="0.00" step="0.01">
             </div>
-            <div>
+
+            <div class="input-group">
                 <label>Category</label>
-                <select id="exp-category">
-                    <option value="Food">Food & Drinks</option>
-                    <option value="Shopping">Shopping</option>
-                    <option value="Transport">Transport (Gas/Bus)</option>
-                    <option value="Bills">Bills & Utilities</option>
-                    <option value="Entertainment">Entertainment</option>
-                    <option value="Other">Other</option>
-                </select>
+                <div class="flex-row">
+                    <select id="exp-category"></select>
+                    <button class="secondary" onclick="toggleCategoryInput()">+ Add</button>
+                </div>
+            </div>
+
+            <div class="input-group hidden" id="new-category-box">
+                <div class="flex-row">
+                    <input type="text" id="new-category-name" placeholder="Name (e.g. Coffee)">
+                    <button class="secondary" onclick="saveNewCategory()">Save</button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Date & Time</label>
+                <input type="datetime-local" id="exp-date">
+            </div>
+
+            <div class="input-group">
+                <label>Note (Optional)</label>
+                <input type="text" id="exp-note" placeholder="What did you buy?">
+            </div>
+
+            <button onclick="addExpense()">Record Transaction</button>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📊 Spending Analytics</h2>
+            <div class="chart-wrapper">
+                <canvas id="expenseChart"></canvas>
+            </div>
+            <div id="monthly-summary" style="margin-top: 20px; text-align: center; color: var(--text-muted); font-size: 14px;">
+                Total Spent: <strong style="color: var(--text-main); font-size: 18px;" id="total-spent-display">$0.00</strong>
             </div>
         </div>
-        <label>Description (Optional)</label>
-        <input type="text" id="exp-desc" placeholder="e.g. Lunch at McDonald's">
-        <button onclick="addExpense()">+ Add Expense</button>
     </div>
 
-    <!-- Smart Suggestion -->
     <div class="card">
-        <h2>💡 Smart Savings Tip</h2>
-        <div id="suggestion-text" class="suggestion-box">
-            Add some expenses to get personalized tips on how to save money!
-        </div>
-    </div>
-
-    <!-- Chart Section -->
-    <div class="card">
-        <h2>Pie Chart Breakdown</h2>
-        <div class="chart-container">
-            <canvas id="expenseChart"></canvas>
-        </div>
-    </div>
-
-    <!-- History Section -->
-    <div class="card">
-        <h2>Expense History</h2>
-        <div id="expense-list"></div>
+        <h2 class="card-title">🕰️ Transaction History</h2>
+        <div id="history-list">
+            </div>
     </div>
 </div>
 
 <script>
-    let expenses = JSON.parse(localStorage.getItem('smart_expenses')) || [];
-    let myChart = null;
+    // State variables
+    let expenses = JSON.parse(localStorage.getItem('pro_expenses')) || [];
+    let categories = JSON.parse(localStorage.getItem('pro_categories')) || ['Food', 'Transport', 'Shopping', 'Bills', 'Entertainment'];
+    let chartInstance = null;
 
-    // Load setup data
+    // Initialize on load
     window.onload = function() {
-        document.getElementById('income').value = localStorage.getItem('smart_income') || '';
-        document.getElementById('goal').value = localStorage.getItem('smart_goal') || '';
+        renderCategories();
+        setCurrentTime();
         updateDashboard();
     };
 
+    // Automatically set exact current date & time
+    function setCurrentTime() {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('exp-date').value = now.toISOString().slice(0, 16);
+    }
+
+    // Category Management
+    function renderCategories() {
+        const select = document.getElementById('exp-category');
+        select.innerHTML = '';
+        categories.forEach(cat => {
+            select.innerHTML += `<option value="${cat}">${cat}</option>`;
+        });
+    }
+
+    function toggleCategoryInput() {
+        const box = document.getElementById('new-category-box');
+        box.classList.toggle('hidden');
+        document.getElementById('new-category-name').focus();
+    }
+
+    function saveNewCategory() {
+        const input = document.getElementById('new-category-name');
+        const newCat = input.value.trim();
+        if (newCat && !categories.includes(newCat)) {
+            categories.push(newCat);
+            localStorage.setItem('pro_categories', JSON.stringify(categories));
+            renderCategories();
+            document.getElementById('exp-category').value = newCat; // Select the new one
+        }
+        input.value = '';
+        document.getElementById('new-category-box').classList.add('hidden');
+    }
+
+    // Expense Management
     function addExpense() {
         const amount = parseFloat(document.getElementById('exp-amount').value);
         const category = document.getElementById('exp-category').value;
-        const desc = document.getElementById('exp-desc').value || category;
+        const note = document.getElementById('exp-note').value || category;
+        const timestamp = document.getElementById('exp-date').value;
 
         if (!amount || amount <= 0) {
-            alert("Please enter a valid amount!");
+            alert("Please enter a valid amount.");
             return;
         }
 
-        const expense = { id: Date.now(), amount, category, desc };
+        const expense = {
+            id: Date.now(),
+            amount: amount,
+            category: category,
+            note: note,
+            date: timestamp
+        };
+
         expenses.push(expense);
+        localStorage.setItem('pro_expenses', JSON.stringify(expenses));
         
+        // Reset form
         document.getElementById('exp-amount').value = '';
-        document.getElementById('exp-desc').value = '';
+        document.getElementById('exp-note').value = '';
+        setCurrentTime();
         
         updateDashboard();
     }
 
     function deleteExpense(id) {
-        expenses = expenses.filter(exp => exp.id !== id);
+        expenses = expenses.filter(e => e.id !== id);
+        localStorage.setItem('pro_expenses', JSON.stringify(expenses));
         updateDashboard();
     }
 
+    // UI Updates
     function updateDashboard() {
-        // Save to local storage
-        localStorage.setItem('smart_expenses', JSON.stringify(expenses));
-        localStorage.setItem('smart_income', document.getElementById('income').value);
-        localStorage.setItem('smart_goal', document.getElementById('goal').value);
-
-        // Group expenses by category
+        let total = 0;
         const categoryTotals = {};
-        let totalSpent = 0;
-        
+
         expenses.forEach(exp => {
-            if (!categoryTotals[exp.category]) categoryTotals[exp.category] = 0;
-            categoryTotals[exp.category] += exp.amount;
-            totalSpent += exp.amount;
+            total += exp.amount;
+            categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + exp.amount;
         });
 
-        updateChart(categoryTotals);
-        updateHistory();
-        generateSmartSuggestion(categoryTotals, totalSpent);
+        document.getElementById('total-spent-display').innerText = '$' + total.toFixed(2);
+        
+        renderHistory();
+        renderChart(categoryTotals);
     }
 
-    function generateSmartSuggestion(categoryTotals, totalSpent) {
-        const suggestionBox = document.getElementById('suggestion-text');
-        const goal = parseFloat(document.getElementById('goal').value) || 0;
-        const income = parseFloat(document.getElementById('income').value) || 0;
+    function renderHistory() {
+        const list = document.getElementById('history-list');
+        list.innerHTML = '';
 
         if (expenses.length === 0) {
-            suggestionBox.innerHTML = "Add some expenses to get personalized tips!";
+            list.innerHTML = '<p style="text-align:center; color:var(--text-muted);">No transactions recorded yet.</p>';
             return;
         }
 
-        // Find highest spending category
-        let maxCategory = '';
-        let maxAmount = 0;
-        for (const [cat, amt] of Object.entries(categoryTotals)) {
-            if (amt > maxAmount) {
-                maxAmount = amt;
-                maxCategory = cat;
-            }
-        }
+        // Sort by date (newest first)
+        const sorted = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        const percentOfTotal = Math.round((maxAmount / totalSpent) * 100);
-        let tip = `Right now, your biggest expense is <strong>${maxCategory}</strong>, taking up <strong>${percentOfTotal}%</strong> of your total spending ($${maxAmount.toFixed(2)}). <br><br>`;
+        sorted.forEach(exp => {
+            // Format date nicely
+            const dateObj = new Date(exp.date);
+            const dateStr = dateObj.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+            const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-        // Custom tips based on category
-        if (maxCategory === 'Food') {
-            tip += "🍔 <strong>Tip to reach your goal:</strong> Try meal-prepping for 3 days a week instead of eating out, or limit your coffee shop visits. It's the easiest category to cut down!";
-        } else if (maxCategory === 'Shopping') {
-            tip += "🛍️ <strong>Tip to reach your goal:</strong> Try the '48-hour rule'. If you want to buy something online, leave it in your cart for 48 hours. Usually, the urge passes and you save the money!";
-        } else if (maxCategory === 'Entertainment') {
-            tip += "🎮 <strong>Tip to reach your goal:</strong> Check your subscriptions. Are you paying for Netflix, Spotify, or games you aren't using daily? Cancel one for a month and put that money toward your savings goal.";
-        } else if (maxCategory === 'Transport') {
-            tip += "🚗 <strong>Tip to reach your goal:</strong> Try to bundle your errands so you drive less, or see if public transport/carpooling works for you once a week.";
-        } else {
-            tip += "💡 <strong>Tip to reach your goal:</strong> Since this is your highest cost, look for one small thing you can cut out from this category to help hit your $" + goal + " savings goal.";
-        }
-
-        // Warning if they are failing their goal
-        const leftOver = income - totalSpent;
-        if (income > 0 && goal > 0 && leftOver < goal) {
-            tip = `<strong style="color:#ef4444;">⚠️ Warning: You only have $${leftOver.toFixed(2)} left, but your savings goal is $${goal}.</strong> You need to stop spending to hit your target!<br><br>` + tip;
-        }
-
-        suggestionBox.innerHTML = tip;
+            list.innerHTML += `
+                <div class="expense-row">
+                    <div class="exp-details">
+                        <strong>${exp.note}</strong>
+                        <span>${exp.category} • ${dateStr} at ${timeStr}</span>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <span class="exp-amount">$${exp.amount.toFixed(2)}</span>
+                        <button class="delete-btn" onclick="deleteExpense(${exp.id})">✕</button>
+                    </div>
+                </div>
+            `;
+        });
     }
 
-    function updateChart(categoryTotals) {
+    function renderChart(categoryTotals) {
         const ctx = document.getElementById('expenseChart').getContext('2d');
-        
         const labels = Object.keys(categoryTotals);
         const data = Object.values(categoryTotals);
         
-        if (myChart) myChart.destroy(); // destroy old chart before drawing new one
+        if (chartInstance) chartInstance.destroy();
 
-        myChart = new Chart(ctx, {
+        if (labels.length === 0) {
+            // Placeholder empty state
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: ['Empty'], datasets: [{ data: [1], backgroundColor: ['#1f2937'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { tooltip: { enabled: false }, legend: { display: false } } }
+            });
+            return;
+        }
+
+        chartInstance = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: labels,
                 datasets: [{
                     data: data,
-                    backgroundColor: ['#f87171', '#3b82f6', '#fbbf24', '#34d399', '#a78bfa', '#94a3b8'],
-                    borderWidth: 0
+                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'],
+                    borderWidth: 2,
+                    borderColor: '#151b2b'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom', labels: { color: '#f8fafc' } }
+                    legend: { position: 'right', labels: { color: '#9ca3af', font: { family: 'Inter' } } }
                 }
             }
-        });
-    }
-
-    function updateHistory() {
-        const list = document.getElementById('expense-list');
-        list.innerHTML = '';
-        
-        // Show newest first
-        const reversedExpenses = [...expenses].reverse();
-
-        reversedExpenses.forEach(exp => {
-            list.innerHTML += `
-                <div class="expense-item">
-                    <div>
-                        <strong style="color:var(--primary)">${exp.category}</strong> - ${exp.desc}<br>
-                        <small style="color:#94a3b8">$${exp.amount.toFixed(2)}</small>
-                    </div>
-                    <button class="delete-btn" onclick="deleteExpense(${exp.id})">X</button>
-                </div>
-            `;
         });
     }
 </script>
