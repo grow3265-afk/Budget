@@ -11,13 +11,14 @@
             --bg-base: #0b0f19;
             --bg-card: #151b2b;
             --bg-input: #1f2937;
+            --bg-hover: #374151;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --accent: #3b82f6;
             --accent-hover: #2563eb;
             --danger: #ef4444;
-            --success: #10b981;
             --border: #2d3748;
+            --sidebar-width: 240px;
         }
 
         body {
@@ -25,356 +26,444 @@
             background-color: var(--bg-base);
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
             display: flex;
-            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .container { width: 100%; max-width: 800px; }
-        
-        .header {
-            text-align: center;
+        /* --- Sidebar Navigation --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+        }
+
+        .sidebar h2 {
+            padding: 0 20px;
+            font-size: 20px;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            color: transparent;
             margin-bottom: 30px;
         }
-        
-        .header h1 { margin: 0; font-size: 28px; font-weight: 700; background: linear-gradient(to right, #3b82f6, #8b5cf6); -webkit-background-clip: text; color: transparent; }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 600px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
-        }
-
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
+        .nav-item {
+            padding: 15px 20px;
+            cursor: pointer;
             color: var(--text-muted);
-            margin-top: 0;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
         }
 
-        label { display: block; font-size: 13px; font-weight: 500; color: var(--text-muted); margin-bottom: 8px; }
-        
-        input, select {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            box-sizing: border-box;
-            transition: all 0.2s ease;
+        .nav-item:hover { background-color: var(--bg-input); color: var(--text-main); }
+        .nav-item.active { background-color: rgba(59, 130, 246, 0.1); color: var(--accent); border-left-color: var(--accent); }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
         }
 
-        input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .input-group { margin-bottom: 16px; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
 
-        .flex-row { display: flex; gap: 12px; align-items: flex-end; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card-title { font-size: 16px; font-weight: 600; color: var(--text-muted); margin-top: 0; margin-bottom: 16px; }
+
+        /* --- Forms & Inputs --- */
+        label { display: block; font-size: 13px; margin-bottom: 8px; color: var(--text-muted); }
+        input {
+            width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text-main); font-family: 'Inter'; box-sizing: border-box; margin-bottom: 16px;
+        }
+        input:focus { outline: none; border-color: var(--accent); }
 
         button {
-            padding: 12px 20px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background 0.2s;
-            width: 100%;
+            padding: 12px 20px; background: var(--accent); color: white; border: none; border-radius: 8px;
+            font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%;
         }
-
         button:hover { background: var(--accent-hover); }
-        
-        button.secondary { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); width: auto; white-space: nowrap; }
-        button.secondary:hover { background: var(--border); }
+        .flex-row { display: flex; gap: 10px; margin-bottom: 16px; }
 
-        .expense-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            background: var(--bg-input);
-            border-radius: 12px;
-            margin-bottom: 10px;
-            border-left: 4px solid var(--accent);
-            transition: transform 0.2s;
+        /* --- Custom Dropdown UI --- */
+        .custom-select-wrapper { position: relative; width: 100%; margin-bottom: 16px; }
+        .custom-select {
+            padding: 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px;
+            cursor: pointer; display: flex; justify-content: space-between; align-items: center;
         }
-
-        .expense-row:hover { transform: translateX(4px); }
-
-        .exp-details strong { display: block; font-size: 15px; margin-bottom: 4px; }
-        .exp-details span { font-size: 12px; color: var(--text-muted); }
-        
-        .exp-amount { font-weight: 700; font-size: 16px; text-align: right; }
-        
-        .delete-btn {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-            padding: 6px 10px;
-            border-radius: 6px;
-            width: auto;
-            margin-left: 15px;
+        .custom-options {
+            position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 8px; margin-top: 5px; z-index: 10; max-height: 200px; overflow-y: auto; display: none;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.3);
         }
-        .delete-btn:hover { background: var(--danger); color: white; }
+        .custom-options.show { display: block; }
+        .custom-option { padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .custom-option:hover { background: var(--bg-hover); }
+        .del-cat-btn { color: var(--danger); font-size: 16px; font-weight: bold; cursor: pointer; padding: 0 5px; }
+        .del-cat-btn:hover { color: #f87171; }
 
-        .chart-wrapper { height: 250px; width: 100%; display: flex; justify-content: center; }
+        /* --- Elements --- */
+        .suggestion-box { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--accent); padding: 15px; border-radius: 8px; font-size: 14px; line-height: 1.5; margin-bottom: 20px;}
+        .expense-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-input); border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--accent); }
+        .delete-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 5px 10px; width: auto; border-radius: 6px; }
 
-        /* Hidden class for toggling UI */
-        .hidden { display: none !important; }
+        /* --- Calendar --- */
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: bold;}
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+        .day-name { font-size: 12px; color: var(--text-muted); padding-bottom: 10px;}
+        .calendar-day { background: var(--bg-input); padding: 15px 5px; border-radius: 6px; cursor: pointer; border: 1px solid transparent; transition: 0.2s;}
+        .calendar-day:hover { border-color: var(--accent); background: var(--bg-hover); }
+        .calendar-day.empty { background: transparent; cursor: default; }
+        .calendar-day.has-expense { border-bottom: 3px solid var(--accent); }
+        .calendar-day.today { background: rgba(59, 130, 246, 0.2); font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1>Overview Dashboard</h1>
-    </div>
+<div class="sidebar">
+    <h2>ProTracker</h2>
+    <div class="nav-item active" onclick="switchTab('home', this)">🏠 Home</div>
+    <div class="nav-item" onclick="switchTab('history', this)">🕰️ Transaction History</div>
+    <div class="nav-item" onclick="switchTab('calendar', this)">📅 Calendar</div>
+</div>
 
-    <div class="dashboard-grid">
-        <div class="card">
-            <h2 class="card-title">📝 Record Expense</h2>
+<div class="main-content">
+    
+    <div id="home" class="tab-content active">
+        <div class="dashboard-grid">
             
-            <div class="input-group">
+            <div class="card">
+                <h2 class="card-title">📝 Record Expense</h2>
                 <label>Amount ($)</label>
-                <input type="number" id="exp-amount" placeholder="0.00" step="0.01">
-            </div>
+                <input type="number" id="exp-amount" placeholder="0.00">
 
-            <div class="input-group">
                 <label>Category</label>
-                <div class="flex-row">
-                    <select id="exp-category"></select>
-                    <button class="secondary" onclick="toggleCategoryInput()">+ Add</button>
+                <div class="custom-select-wrapper">
+                    <div class="custom-select" id="selected-category" onclick="toggleDropdown()">
+                        <span id="cat-text">Food</span>
+                        <span>▼</span>
+                    </div>
+                    <div class="custom-options" id="category-dropdown">
+                        </div>
                 </div>
-            </div>
 
-            <div class="input-group hidden" id="new-category-box">
                 <div class="flex-row">
-                    <input type="text" id="new-category-name" placeholder="Name (e.g. Coffee)">
-                    <button class="secondary" onclick="saveNewCategory()">Save</button>
+                    <input type="text" id="new-category-name" placeholder="New category name" style="margin-bottom:0;">
+                    <button style="width:auto; padding: 0 15px; background: var(--bg-hover);" onclick="addNewCategory()">+ Add</button>
                 </div>
-            </div>
 
-            <div class="input-group">
                 <label>Date & Time</label>
                 <input type="datetime-local" id="exp-date">
-            </div>
 
-            <div class="input-group">
                 <label>Note (Optional)</label>
                 <input type="text" id="exp-note" placeholder="What did you buy?">
+
+                <button onclick="addExpense()">Record Transaction</button>
             </div>
 
-            <button onclick="addExpense()">Record Transaction</button>
-        </div>
-
-        <div class="card">
-            <h2 class="card-title">📊 Spending Analytics</h2>
-            <div class="chart-wrapper">
-                <canvas id="expenseChart"></canvas>
-            </div>
-            <div id="monthly-summary" style="margin-top: 20px; text-align: center; color: var(--text-muted); font-size: 14px;">
-                Total Spent: <strong style="color: var(--text-main); font-size: 18px;" id="total-spent-display">$0.00</strong>
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="card">
+                    <h2 class="card-title">💡 Smart Suggestion</h2>
+                    <div class="suggestion-box" id="suggestion-text">
+                        Add some expenses to see your personalized insights!
+                    </div>
+                </div>
+                <div class="card">
+                    <h2 class="card-title">📊 Monthly Overview</h2>
+                    <div style="height: 200px; width: 100%;"><canvas id="expenseChart"></canvas></div>
+                    <h3 style="text-align: center; margin-top: 15px;" id="total-spent-display">$0.00</h3>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="card">
-        <h2 class="card-title">🕰️ Transaction History</h2>
-        <div id="history-list">
-            </div>
+    <div id="history" class="tab-content">
+        <div class="card" style="max-width: 800px; margin: 0 auto;">
+            <h2 class="card-title">All Transactions</h2>
+            <div id="history-list"></div>
+        </div>
     </div>
+
+    <div id="calendar" class="tab-content">
+        <div class="card" style="max-width: 800px; margin: 0 auto;">
+            <div class="calendar-header">
+                <button style="width: auto; padding: 5px 15px;" onclick="changeMonth(-1)">◀</button>
+                <h2 id="calendar-month-year" style="margin:0;">Month Year</h2>
+                <button style="width: auto; padding: 5px 15px;" onclick="changeMonth(1)">▶</button>
+            </div>
+            
+            <div class="calendar-grid">
+                <div class="day-name">Sun</div><div class="day-name">Mon</div><div class="day-name">Tue</div>
+                <div class="day-name">Wed</div><div class="day-name">Thu</div><div class="day-name">Fri</div><div class="day-name">Sat</div>
+            </div>
+            <div class="calendar-grid" id="calendar-days">
+                </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    // State variables
-    let expenses = JSON.parse(localStorage.getItem('pro_expenses')) || [];
-    let categories = JSON.parse(localStorage.getItem('pro_categories')) || ['Food', 'Transport', 'Shopping', 'Bills', 'Entertainment'];
+    // System Data
+    let expenses = JSON.parse(localStorage.getItem('pro_exp_data')) || [];
+    let categories = JSON.parse(localStorage.getItem('pro_cat_data')) || ['Food', 'Transport', 'Shopping', 'Bills'];
     let chartInstance = null;
+    let currentCategory = categories[0];
+    let currentDate = new Date(); // For Calendar
 
-    // Initialize on load
+    // Initialize App
     window.onload = function() {
-        renderCategories();
         setCurrentTime();
+        renderCategories();
         updateDashboard();
+        renderCalendar();
     };
 
-    // Automatically set exact current date & time
+    // --- Tab Navigation ---
+    function switchTab(tabId, element) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        element.classList.add('active');
+    }
+
+    // --- Custom Dropdown Logic ---
+    function toggleDropdown() {
+        document.getElementById('category-dropdown').classList.toggle('show');
+    }
+
+    // Close dropdown if clicked outside
+    window.onclick = function(event) {
+        if (!event.target.closest('.custom-select-wrapper')) {
+            document.getElementById('category-dropdown').classList.remove('show');
+        }
+    }
+
+    function renderCategories() {
+        const dropdown = document.getElementById('category-dropdown');
+        dropdown.innerHTML = '';
+        
+        categories.forEach((cat, index) => {
+            const div = document.createElement('div');
+            div.className = 'custom-option';
+            
+            const textSpan = document.createElement('span');
+            textSpan.innerText = cat;
+            textSpan.onclick = () => selectCategory(cat);
+            div.appendChild(textSpan);
+
+            // Allow delete if it's not the very last category
+            if(categories.length > 1) {
+                const delSpan = document.createElement('span');
+                delSpan.innerText = '×';
+                delSpan.className = 'del-cat-btn';
+                delSpan.onclick = (e) => {
+                    e.stopPropagation(); // prevent selecting when deleting
+                    deleteCategory(index);
+                };
+                div.appendChild(delSpan);
+            }
+            dropdown.appendChild(div);
+        });
+
+        if(!categories.includes(currentCategory)) {
+            currentCategory = categories[0];
+        }
+        document.getElementById('cat-text').innerText = currentCategory;
+    }
+
+    function selectCategory(cat) {
+        currentCategory = cat;
+        document.getElementById('cat-text').innerText = cat;
+        document.getElementById('category-dropdown').classList.remove('show');
+    }
+
+    function addNewCategory() {
+        const input = document.getElementById('new-category-name');
+        const newCat = input.value.trim();
+        if (newCat && !categories.includes(newCat)) {
+            categories.push(newCat);
+            localStorage.setItem('pro_cat_data', JSON.stringify(categories));
+            renderCategories();
+            selectCategory(newCat);
+        }
+        input.value = '';
+    }
+
+    function deleteCategory(index) {
+        if(confirm("Delete this category?")) {
+            categories.splice(index, 1);
+            localStorage.setItem('pro_cat_data', JSON.stringify(categories));
+            renderCategories();
+        }
+    }
+
+    // --- Expense Logic ---
     function setCurrentTime() {
         const now = new Date();
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
         document.getElementById('exp-date').value = now.toISOString().slice(0, 16);
     }
 
-    // Category Management
-    function renderCategories() {
-        const select = document.getElementById('exp-category');
-        select.innerHTML = '';
-        categories.forEach(cat => {
-            select.innerHTML += `<option value="${cat}">${cat}</option>`;
-        });
-    }
-
-    function toggleCategoryInput() {
-        const box = document.getElementById('new-category-box');
-        box.classList.toggle('hidden');
-        document.getElementById('new-category-name').focus();
-    }
-
-    function saveNewCategory() {
-        const input = document.getElementById('new-category-name');
-        const newCat = input.value.trim();
-        if (newCat && !categories.includes(newCat)) {
-            categories.push(newCat);
-            localStorage.setItem('pro_categories', JSON.stringify(categories));
-            renderCategories();
-            document.getElementById('exp-category').value = newCat; // Select the new one
-        }
-        input.value = '';
-        document.getElementById('new-category-box').classList.add('hidden');
-    }
-
-    // Expense Management
     function addExpense() {
         const amount = parseFloat(document.getElementById('exp-amount').value);
-        const category = document.getElementById('exp-category').value;
-        const note = document.getElementById('exp-note').value || category;
+        const note = document.getElementById('exp-note').value || currentCategory;
         const timestamp = document.getElementById('exp-date').value;
 
-        if (!amount || amount <= 0) {
-            alert("Please enter a valid amount.");
-            return;
-        }
+        if (!amount || amount <= 0) return alert("Enter valid amount");
 
-        const expense = {
-            id: Date.now(),
-            amount: amount,
-            category: category,
-            note: note,
-            date: timestamp
-        };
-
-        expenses.push(expense);
-        localStorage.setItem('pro_expenses', JSON.stringify(expenses));
+        expenses.push({ id: Date.now(), amount, category: currentCategory, note, date: timestamp });
+        localStorage.setItem('pro_exp_data', JSON.stringify(expenses));
         
-        // Reset form
         document.getElementById('exp-amount').value = '';
         document.getElementById('exp-note').value = '';
         setCurrentTime();
         
         updateDashboard();
+        renderCalendar();
     }
 
     function deleteExpense(id) {
         expenses = expenses.filter(e => e.id !== id);
-        localStorage.setItem('pro_expenses', JSON.stringify(expenses));
+        localStorage.setItem('pro_exp_data', JSON.stringify(expenses));
         updateDashboard();
+        renderCalendar();
     }
 
-    // UI Updates
+    // --- Dashboard & Analytics ---
     function updateDashboard() {
         let total = 0;
-        const categoryTotals = {};
+        const catTotals = {};
 
         expenses.forEach(exp => {
             total += exp.amount;
-            categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + exp.amount;
+            catTotals[exp.category] = (catTotals[exp.category] || 0) + exp.amount;
         });
 
-        document.getElementById('total-spent-display').innerText = '$' + total.toFixed(2);
+        document.getElementById('total-spent-display').innerText = 'Total Spent: $' + total.toFixed(2);
         
         renderHistory();
-        renderChart(categoryTotals);
+        renderChart(catTotals);
+        generateSuggestion(catTotals, total);
+    }
+
+    function generateSuggestion(catTotals, totalSpent) {
+        const box = document.getElementById('suggestion-text');
+        if (expenses.length === 0) return box.innerHTML = "Add some expenses to see insights!";
+
+        let maxCat = '';
+        let maxAmt = 0;
+        for (const [cat, amt] of Object.entries(catTotals)) {
+            if (amt > maxAmt) { maxAmt = amt; maxCat = cat; }
+        }
+
+        const pct = Math.round((maxAmt / totalSpent) * 100);
+        box.innerHTML = `Your highest expense right now is <strong>${maxCat}</strong>, taking up <strong>${pct}%</strong> of your total spending ($${maxAmt.toFixed(2)}). <br><br> 💡 <em>Tip: Try to find one small way to reduce your ${maxCat} spending this week to boost your savings!</em>`;
     }
 
     function renderHistory() {
         const list = document.getElementById('history-list');
         list.innerHTML = '';
-
-        if (expenses.length === 0) {
-            list.innerHTML = '<p style="text-align:center; color:var(--text-muted);">No transactions recorded yet.</p>';
-            return;
-        }
-
-        // Sort by date (newest first)
         const sorted = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
 
         sorted.forEach(exp => {
-            // Format date nicely
-            const dateObj = new Date(exp.date);
-            const dateStr = dateObj.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
-            const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const d = new Date(exp.date);
+            const dateStr = d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + " - " + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
             list.innerHTML += `
                 <div class="expense-row">
-                    <div class="exp-details">
-                        <strong>${exp.note}</strong>
-                        <span>${exp.category} • ${dateStr} at ${timeStr}</span>
+                    <div>
+                        <strong style="display:block; margin-bottom:4px;">${exp.note}</strong>
+                        <span style="font-size:12px; color:var(--text-muted);">${exp.category} • ${dateStr}</span>
                     </div>
-                    <div style="display: flex; align-items: center;">
-                        <span class="exp-amount">$${exp.amount.toFixed(2)}</span>
-                        <button class="delete-btn" onclick="deleteExpense(${exp.id})">✕</button>
+                    <div style="display:flex; align-items:center;">
+                        <span style="font-weight:bold; font-size:16px;">$${exp.amount.toFixed(2)}</span>
+                        <button class="delete-btn" style="margin-left:15px;" onclick="deleteExpense(${exp.id})">✕</button>
                     </div>
                 </div>
             `;
         });
     }
 
-    function renderChart(categoryTotals) {
+    function renderChart(catTotals) {
         const ctx = document.getElementById('expenseChart').getContext('2d');
-        const labels = Object.keys(categoryTotals);
-        const data = Object.values(categoryTotals);
-        
         if (chartInstance) chartInstance.destroy();
 
-        if (labels.length === 0) {
-            // Placeholder empty state
-            chartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: { labels: ['Empty'], datasets: [{ data: [1], backgroundColor: ['#1f2937'], borderWidth: 0 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { tooltip: { enabled: false }, legend: { display: false } } }
-            });
+        if (Object.keys(catTotals).length === 0) {
+            chartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: ['Empty'], datasets: [{ data: [1], backgroundColor: ['#1f2937'], borderWidth:0 }] }, options: { plugins: { tooltip: {enabled:false} } } });
             return;
         }
 
         chartInstance = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'],
-                    borderWidth: 2,
-                    borderColor: '#151b2b'
-                }]
+                labels: Object.keys(catTotals),
+                datasets: [{ data: Object.values(catTotals), backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'], borderWidth: 2, borderColor: '#151b2b' }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'right', labels: { color: '#9ca3af', font: { family: 'Inter' } } }
-                }
-            }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: {color: '#9ca3af'} } } }
         });
+    }
+
+    // --- Calendar Logic ---
+    function changeMonth(dir) {
+        currentDate.setMonth(currentDate.getMonth() + dir);
+        renderCalendar();
+    }
+
+    function renderCalendar() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        
+        document.getElementById('calendar-month-year').innerText = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
+        
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        const grid = document.getElementById('calendar-days');
+        grid.innerHTML = '';
+
+        // Extract dates that have expenses
+        const expenseDates = expenses.map(e => new Date(e.date).toDateString());
+        const todayStr = new Date().toDateString();
+
+        // Empty slots
+        for (let i = 0; i < firstDay; i++) {
+            grid.innerHTML += `<div class="calendar-day empty"></div>`;
+        }
+
+        // Days
+        for (let i = 1; i <= daysInMonth; i++) {
+            const thisDayDate = new Date(year, month, i);
+            const thisDayStr = thisDayDate.toDateString();
+            
+            let classes = 'calendar-day';
+            if (thisDayStr === todayStr) classes += ' today';
+            if (expenseDates.includes(thisDayStr)) classes += ' has-expense';
+
+            // When a day is clicked, pre-fill the form date and jump to Home
+            const div = document.createElement('div');
+            div.className = classes;
+            div.innerText = i;
+            div.onclick = () => {
+                // Set the input date to this specific day at 12:00 PM
+                const formattedDate = new Date(year, month, i, 12, 0).toISOString().slice(0, 16);
+                document.getElementById('exp-date').value = formattedDate;
+                // Switch to home tab automatically
+                document.querySelectorAll('.nav-item')[0].click(); 
+            };
+            
+            grid.appendChild(div);
+        }
     }
 </script>
 
