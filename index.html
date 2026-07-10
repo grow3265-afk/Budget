@@ -21,15 +21,7 @@
             --sidebar-width: 240px;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
         /* --- Mobile Header & Menu Toggle --- */
         .mobile-header { display: none; background: var(--bg-card); padding: 15px 20px; border-bottom: 1px solid var(--border); align-items: center; justify-content: space-between; }
@@ -69,6 +61,8 @@
         input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
         button { padding: 12px 20px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%; font-size: 15px;}
         button:hover { background: var(--accent-hover); }
+        button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+        button.secondary:hover { background: var(--bg-hover); color: var(--text-main); }
         .flex-row { display: flex; gap: 10px; margin-bottom: 20px; }
 
         /* --- Custom Dropdown UI --- */
@@ -110,8 +104,10 @@
 </head>
 <body>
 
+<!-- Mobile Overlay -->
 <div class="overlay" id="mobile-overlay" onclick="toggleSidebar()"></div>
 
+<!-- Sidebar Menu -->
 <div class="sidebar" id="sidebar">
     <h2>ProTracker</h2>
     <div class="nav-item active" onclick="switchTab('home', this)">🏠 Home</div>
@@ -121,14 +117,17 @@
 </div>
 
 <div class="main-content">
+    <!-- Mobile Header -->
     <div class="mobile-header">
         <h2 style="margin:0; font-size:18px; color: var(--text-main);">ProTracker</h2>
         <button class="menu-btn" onclick="toggleSidebar()">☰</button>
     </div>
     
     <div class="scrollable-area">
+        <!-- HOME TAB -->
         <div id="home" class="tab-content active">
             <div class="dashboard-grid">
+                <!-- Add Expense Area -->
                 <div class="card">
                     <h2 class="card-title">📝 Record Expense</h2>
                     
@@ -154,6 +153,7 @@
                     <button onclick="addExpense()">Record Transaction</button>
                 </div>
 
+                <!-- Analytics Area -->
                 <div style="display: flex; flex-direction: column; gap: 20px;">
                     <div class="card">
                         <h2 class="card-title">💡 Smart Suggestion</h2>
@@ -168,6 +168,7 @@
             </div>
         </div>
 
+        <!-- HISTORY TAB -->
         <div id="history" class="tab-content">
             <div class="card" style="max-width: 800px; margin: 0 auto;">
                 <h2 class="card-title">All Transactions</h2>
@@ -175,6 +176,7 @@
             </div>
         </div>
 
+        <!-- CALENDAR TAB -->
         <div id="calendar" class="tab-content">
             <div class="card" style="max-width: 800px; margin: 0 auto;">
                 <div class="calendar-header">
@@ -191,19 +193,21 @@
             </div>
         </div>
 
+        <!-- SETTINGS TAB -->
         <div id="settings" class="tab-content">
             <div class="dashboard-grid">
+                <!-- Manage Categories -->
                 <div class="card">
                     <h2 class="card-title">🏷️ Add New Category</h2>
                     
                     <div class="flex-row" style="margin-bottom: 10px;">
                         <div style="flex: 1;">
-                            <label>Symbol / Emoji (Optional)</label>
+                            <label>Symbol (Optional)</label>
                             <input type="text" id="set-cat-emoji" placeholder="e.g. ☕" maxlength="2">
                         </div>
                         <div style="flex: 3;">
                             <label>Category Name</label>
-                            <input type="text" id="set-cat-name" placeholder="e.g. Coffee">
+                            <input type="text" id="set-cat-name" placeholder="e.g. Wifi, Medic...">
                         </div>
                     </div>
                     <p style="font-size: 12px; color: var(--text-muted); margin-top: -5px; margin-bottom: 20px;">
@@ -212,10 +216,15 @@
                     <button onclick="addNewCategory()">+ Save Category</button>
                 </div>
 
+                <!-- Existing Categories List -->
                 <div class="card">
-                    <h2 class="card-title">📂 Manage Categories</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+                        <h2 class="card-title" style="border: none; padding: 0; margin: 0;">📂 Manage Categories</h2>
+                        <button class="secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="resetCategories()">Reset Defaults</button>
+                    </div>
                     <div id="settings-cat-list" style="max-height: 400px; overflow-y: auto;">
-                        </div>
+                        <!-- Injected via JS -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -227,16 +236,37 @@
     let expenses = JSON.parse(localStorage.getItem('pro_exp_data')) || [];
     let categories = JSON.parse(localStorage.getItem('pro_cat_data')) || ['🍔 Food', '🚗 Transport', '🛍️ Shopping', '🧾 Bills'];
     
-    // --- SMART DICTIONARY ---
+    // --- MASSIVE SMART DICTIONARY UPGRADE ---
     const smartDictionary = {
+        // Medical / Health
+        'medic': '🩹', 'medical': '🏥', 'hospital': '🏥', 'clinic': '🏥', 'doctor': '👨‍⚕️',
+        'medicine': '💊', 'pharmacy': '💊', 'bandage': '🩹', 'health': '⚕️', 'dental': '🦷',
+        
+        // Tech / Utilities
+        'wifi': '🛜', 'router': '📡', 'internet': '🌐', 'data': '📶', 'phone': '📱', 'mobile': '📱',
+        'water': '💧', 'electricity': '⚡', 'electric': '⚡', 'power': '🔌', 'bill': '🧾',
+        
+        // Food / Drink
         'coffee': '☕', 'cafe': '☕', 'starbucks': '☕', 'boba': '🧋', 'drink': '🥤',
-        'medical': '🏥', 'hospital': '🏥', 'clinic': '🏥', 'doctor': '👨‍⚕️', 'medicine': '💊', 'pharmacy': '💊',
-        'food': '🍔', 'restaurant': '🍽️', 'pizza': '🍕', 'kfc': '🍗', 'mcdonalds': '🍔', 'wifi': '📶', 'internet': '🌐',
-        'transport': '🚗', 'grab': '🚗', 'petrol': '⛽', 'gas': '⛽', 'toll': '🛣️', 'parking': '🅿️',
-        'shopping': '🛍️', 'clothes': '👕', 'shoes': '👟',
-        'bills': '🧾', 'water': '💧', 'electricity': '⚡', 'phone': '📱',
+        'food': '🍔', 'restaurant': '🍽️', 'pizza': '🍕', 'kfc': '🍗', 'mcdonalds': '🍔',
+        'burger': '🍔', 'sushi': '🍣', 'noodle': '🍜', 'snack': '🍫', 'breakfast': '🍳',
+        
+        // Transport
+        'transport': '🚗', 'grab': '🚗', 'petrol': '⛽', 'gas': '⛽', 'toll': '🛣️',
+        'parking': '🅿️', 'bus': '🚌', 'train': '🚆', 'flight': '✈️', 'taxi': '🚕',
+        
+        // Shopping / Personal
+        'shopping': '🛍️', 'clothes': '👕', 'shoes': '👟', 'gift': '🎁', 'beauty': '💄',
+        
+        // Entertainment / Leisure
         'entertainment': '🎮', 'movie': '🍿', 'cinema': '🍿', 'game': '🎮', 'steam': '🕹️',
-        'groceries': '🛒', 'market': '🥬', 'supermarket': '🛒'
+        'sport': '⚽', 'gym': '🏋️', 'music': '🎵', 'spotify': '🎧', 'netflix': '📺',
+        
+        // Groceries / Home
+        'groceries': '🛒', 'market': '🥬', 'supermarket': '🛒', 'home': '🏠', 'rent': '🔑',
+        
+        // Others
+        'salary': '💰', 'income': '💵', 'tax': '📉', 'insurance': '🛡️', 'pet': '🐾'
     };
 
     let chartInstance = null;
@@ -308,7 +338,7 @@
 
     function selectCategory(cat) { currentCategory = cat; document.getElementById('cat-text').innerText = cat; document.getElementById('category-dropdown').classList.remove('show'); }
     
-    // --- SMART ADD CATEGORY LOGIC (FROM SETTINGS) ---
+    // --- SMART ADD CATEGORY LOGIC ---
     function addNewCategory() {
         const emojiInput = document.getElementById('set-cat-emoji').value.trim();
         const nameInput = document.getElementById('set-cat-name').value.trim();
@@ -320,7 +350,6 @@
         if (emojiInput) {
             finalEmoji = emojiInput;
         } else {
-            // Check dictionary if no emoji provided
             const searchWord = nameInput.toLowerCase();
             for (const [keyword, emoji] of Object.entries(smartDictionary)) {
                 if (searchWord.includes(keyword)) {
@@ -330,16 +359,14 @@
             }
         }
         
-        // Format string. If no emoji at all, just use text.
         const formattedCategory = finalEmoji ? `${finalEmoji} ${nameInput}` : nameInput;
 
         if (!categories.includes(formattedCategory)) {
             categories.push(formattedCategory);
             localStorage.setItem('pro_cat_data', JSON.stringify(categories));
             renderCategories();
-            selectCategory(formattedCategory); // Auto select it on home
+            selectCategory(formattedCategory);
             
-            // Clear inputs
             document.getElementById('set-cat-emoji').value = '';
             document.getElementById('set-cat-name').value = '';
             alert("Category added successfully!");
@@ -357,10 +384,17 @@
         } 
     }
 
+    function resetCategories() {
+        if(confirm("This will replace your current categories with the default ones. Continue?")) {
+            categories = ['🍔 Food', '🚗 Transport', '🛍️ Shopping', '🧾 Bills'];
+            localStorage.setItem('pro_cat_data', JSON.stringify(categories));
+            renderCategories();
+        }
+    }
+
     // --- Expense Logic ---
     function addExpense() {
         const amount = parseFloat(document.getElementById('exp-amount').value);
-        // Strip emoji from default note if user didn't type a note
         let defaultNote = currentCategory;
         if(currentCategory.includes(' ')) defaultNote = currentCategory.substring(currentCategory.indexOf(' ') + 1);
         
@@ -388,7 +422,6 @@
         updateDashboard();
         renderCalendar();
         
-        // Brief success feedback
         const btn = document.querySelector('#home button');
         btn.innerText = "✅ Saved!";
         btn.style.background = "#10b981";
@@ -415,7 +448,6 @@
         box.innerHTML = `Your highest expense is <strong>${maxCat}</strong>, taking up <strong>${pct}%</strong> of your total spending (RM ${maxAmt.toFixed(2)}). <br><br> 💡 <em>Tip: Try to find one small way to reduce your ${maxCat} spending this week to boost your savings!</em>`;
     }
 
-    // --- UPGRADED HISTORY UI ---
     function renderHistory() {
         const list = document.getElementById('history-list');
         list.innerHTML = '';
