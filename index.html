@@ -36,7 +36,7 @@
 
         /* --- Layout --- */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;}
-        .scrollable-area { padding: 30px; overflow-y: auto; flex: 1; padding-bottom: 100px; } /* Extra padding for FAB */
+        .scrollable-area { padding: 30px; overflow-y: auto; flex: 1; padding-bottom: 100px; } 
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -91,13 +91,10 @@
         .bottom-sheet.open { bottom: 0; }
         
         .sheet-handle { width: 40px; height: 5px; background: var(--border); border-radius: 10px; margin: 12px auto 10px auto; }
-        
         .sheet-content { padding: 0 20px 20px 20px; display: flex; flex-direction: column; gap: 15px; }
-        
         .sheet-amount-display { text-align: center; font-size: 42px; font-weight: 800; color: var(--text-main); margin: 10px 0; letter-spacing: -1px;}
         .sheet-amount-display.empty { color: var(--text-muted); }
         
-        /* Horizontal Category Scroll */
         .sheet-cat-scroll { display: flex; overflow-x: auto; gap: 12px; padding: 5px 0; scrollbar-width: none; }
         .sheet-cat-scroll::-webkit-scrollbar { display: none; }
         .sheet-cat-btn { background: var(--bg-input); border: 2px solid transparent; padding: 10px 16px; border-radius: 12px; white-space: nowrap; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; color: var(--text-muted);}
@@ -106,13 +103,19 @@
         .sheet-note-input { background: transparent; border: none; border-bottom: 2px solid var(--bg-input); border-radius: 0; padding: 10px 0; font-size: 16px; margin: 0;}
         .sheet-note-input:focus { box-shadow: none; border-color: var(--accent); }
         
-        /* Custom Numpad */
         .numpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px; }
         .numpad-btn { background: transparent; border: none; color: var(--text-main); font-size: 24px; font-weight: 600; padding: 15px 0; border-radius: 12px; cursor: pointer; transition: 0.1s; display: flex; justify-content: center; align-items: center;}
         .numpad-btn:active { background: var(--bg-hover); transform: scale(0.95);}
         .numpad-btn.action-btn { font-size: 20px; color: var(--text-muted); }
-        
         .save-expense-btn { background: var(--accent); padding: 16px; font-size: 18px; font-weight: 700; border-radius: 16px; margin-top: 10px;}
+
+        /* --- Dropdown UI --- */
+        .custom-select-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
+        .custom-select { padding: 12px 15px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 15px;}
+        .custom-options { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; margin-top: 5px; z-index: 10; max-height: 200px; overflow-y: auto; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .custom-options.show { display: block; }
+        .custom-option { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .custom-option:hover { background: var(--bg-hover); }
 
         /* --- History & Elements --- */
         .suggestion-box { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--accent); padding: 15px; border-radius: 8px; font-size: 14px; line-height: 1.6; }
@@ -135,6 +138,7 @@
         .day-expense { font-size: 12px; color: #f87171; margin-top: 5px; font-weight: 700; }
         .calendar-notice { display: none; background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 12px; border-radius: 8px; text-align: center; font-size: 14px; margin-bottom: 20px; font-weight: 600; border: 1px solid rgba(59, 130, 246, 0.3);}
         .calendar-notice.active { display: block; }
+        .setting-cat-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: var(--bg-input); border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border);}
         
         /* Dashboard Totals UI */
         .balance-board { display: flex; justify-content: space-between; text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border); }
@@ -163,17 +167,16 @@
 </head>
 <body>
 
+<!-- Mobile Optimized: Floating Action Button -->
 <button class="fab" onclick="openBottomSheet()">+</button>
 
+<!-- Mobile Optimized: Bottom Sheet -->
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeBottomSheet()"></div>
 <div class="bottom-sheet" id="bottom-sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-content">
         <div class="sheet-amount-display empty" id="sheet-amount">RM 0.00</div>
-        
-        <div class="sheet-cat-scroll" id="sheet-categories">
-            </div>
-
+        <div class="sheet-cat-scroll" id="sheet-categories"></div>
         <input type="text" class="sheet-note-input" id="sheet-note" placeholder="Add a note (optional)...">
         
         <div class="numpad-grid">
@@ -190,11 +193,11 @@
             <button class="numpad-btn" onclick="npPress('0')">0</button>
             <button class="numpad-btn action-btn" onclick="npPress('back')">⌫</button>
         </div>
-
         <button class="save-expense-btn" id="sheet-save-btn" onclick="addExpenseFromSheet()">Save Expense</button>
     </div>
 </div>
 
+<!-- Custom Month Picker Overlay -->
 <div class="month-modal" id="month-modal">
     <div class="month-modal-content">
         <div class="mp-header">
@@ -206,8 +209,10 @@
     </div>
 </div>
 
+<!-- Mobile Nav Overlay -->
 <div class="overlay" id="mobile-overlay" onclick="toggleSidebar()"></div>
 
+<!-- Sidebar Menu -->
 <div class="sidebar" id="sidebar">
     <h2>ProTracker</h2>
     <div class="nav-item active" onclick="switchTab('home', this)">🏠 Dashboard</div>
@@ -223,6 +228,7 @@
     </div>
     
     <div class="scrollable-area">
+        <!-- HOME TAB -->
         <div id="home" class="tab-content active">
             <div class="header-section">
                 <h1 style="margin: 0; font-size: 24px;">Overview</h1>
@@ -233,28 +239,59 @@
                 Logging expense for: <span id="override-date-text"></span>
             </div>
             
-            <div class="card" style="margin-bottom: 20px;">
-                <h2 class="card-title">💡 Smart Suggestion</h2>
-                <div class="suggestion-box" id="suggestion-text"></div>
-            </div>
+            <div class="dashboard-grid">
+                <!-- Add Expense Area -->
+                <div class="card">
+                    <h2 class="card-title">📝 Record Expense</h2>
+                    
+                    <label>Amount (RM)</label>
+                    <input type="number" id="exp-amount" placeholder="0.00" step="0.01">
 
-            <div class="card">
-                <h2 class="card-title">📊 Spending Analytics</h2>
-                <div style="height: 220px; width: 100%;"><canvas id="expenseChart"></canvas></div>
-                
-                <div class="balance-board">
-                    <div class="balance-col" style="border-right: 1px solid var(--border);">
-                        <div class="balance-label">Total Used</div>
-                        <div class="balance-val val-danger" id="total-spent-display">RM 0.00</div>
+                    <label>Category</label>
+                    <div class="custom-select-wrapper">
+                        <!-- THE FIX: This invisible input catches the 'Next' button from your mobile keyboard -->
+                        <input type="text" style="position: absolute; width: 1px; height: 1px; opacity: 0; border: none; padding: 0; z-index: -1;" onfocus="document.getElementById('category-dropdown').classList.add('show'); this.blur();">
+                        
+                        <div class="custom-select" id="selected-category" onclick="toggleDropdown()">
+                            <span id="cat-text">Select Category</span>
+                            <span>▼</span>
+                        </div>
+                        <div class="custom-options" id="category-dropdown"></div>
                     </div>
-                    <div class="balance-col">
-                        <div class="balance-label">Remaining</div>
-                        <div class="balance-val val-success" id="total-left-display">RM 0.00</div>
+
+                    <label>Note (Optional)</label>
+                    <input type="text" id="exp-note" placeholder="e.g. foodpanda, Touch n' Go reload...">
+
+                    <button onclick="addExpense()">Record Transaction</button>
+                </div>
+
+                <!-- Analytics Area -->
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="card">
+                        <h2 class="card-title">💡 Smart Suggestion</h2>
+                        <div class="suggestion-box" id="suggestion-text"></div>
+                    </div>
+
+                    <div class="card">
+                        <h2 class="card-title">📊 Spending Analytics</h2>
+                        <div style="height: 220px; width: 100%;"><canvas id="expenseChart"></canvas></div>
+                        
+                        <div class="balance-board">
+                            <div class="balance-col" style="border-right: 1px solid var(--border);">
+                                <div class="balance-label">Total Used</div>
+                                <div class="balance-val val-danger" id="total-spent-display">RM 0.00</div>
+                            </div>
+                            <div class="balance-col">
+                                <div class="balance-label">Remaining</div>
+                                <div class="balance-val val-success" id="total-left-display">RM 0.00</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- HISTORY TAB -->
         <div id="history" class="tab-content">
             <div class="card" style="max-width: 800px; margin: 0 auto; padding-bottom: 10px;">
                 <div class="header-section" style="margin-bottom: 10px;">
@@ -265,6 +302,7 @@
             </div>
         </div>
 
+        <!-- CALENDAR TAB -->
         <div id="calendar" class="tab-content">
             <div class="card" style="max-width: 800px; margin: 0 auto;">
                 <div class="calendar-header">
@@ -280,6 +318,7 @@
             </div>
         </div>
 
+        <!-- SETTINGS TAB -->
         <div id="settings" class="tab-content">
             <div class="dashboard-grid">
                 <div style="display: flex; flex-direction: column; gap: 20px;">
@@ -407,7 +446,7 @@
             btn.innerText = cat;
             btn.onclick = () => {
                 sheetSelectedCat = cat;
-                renderSheetCategories(); // re-render to update active class
+                renderSheetCategories(); 
             };
             scrollBox.appendChild(btn);
         });
@@ -429,7 +468,7 @@
         expenses.push({ id: Date.now(), amount, category: sheetSelectedCat, note, date: timestamp });
         localStorage.setItem('pro_exp_data', JSON.stringify(expenses));
         
-        updateFilterMonth(timestamp.slice(0, 7)); // Jump to month
+        updateFilterMonth(timestamp.slice(0, 7)); 
         
         customOverrideDate = null; 
         document.getElementById('calendar-override-notice').classList.remove('active');
@@ -438,7 +477,6 @@
         renderCalendar();
         closeBottomSheet();
     }
-
 
     // --- FILTER & MODAL LOGIC ---
     function updateFilterMonth(val) {
@@ -486,6 +524,16 @@
         });
     }
 
+    // Close Modals/Dropdowns if clicked outside
+    window.onclick = function(event) { 
+        if (!event.target.closest('.custom-select-wrapper')) { 
+            document.getElementById('category-dropdown').classList.remove('show'); 
+        }
+        if (event.target.id === 'month-modal') {
+            closeMonthPicker();
+        }
+    }
+
     // --- TAB NAV ---
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('open');
@@ -518,7 +566,20 @@
                     <button class="delete-btn" style="padding: 4px 10px; margin:0;" onclick="deleteCategory(${index})">Delete</button>
                 </div>`;
         });
+        
+        const dropdown = document.getElementById('category-dropdown');
+        dropdown.innerHTML = '';
+        categories.forEach((cat) => {
+            const div = document.createElement('div'); div.className = 'custom-option'; div.innerText = cat;
+            div.onclick = () => selectCategory(cat); dropdown.appendChild(div);
+        });
+
+        if(!categories.includes(currentCategory) && categories.length > 0) currentCategory = categories[0];
+        document.getElementById('cat-text').innerText = currentCategory || 'No Categories';
     }
+
+    function toggleDropdown() { document.getElementById('category-dropdown').classList.toggle('show'); }
+    function selectCategory(cat) { currentCategory = cat; document.getElementById('cat-text').innerText = cat; document.getElementById('category-dropdown').classList.remove('show'); }
 
     function addNewCategory() {
         const emojiInput = document.getElementById('set-cat-emoji').value.trim();
@@ -565,6 +626,31 @@
     function deleteExpense(id) { expenses = expenses.filter(e => e.id !== id); localStorage.setItem('pro_exp_data', JSON.stringify(expenses)); updateDashboard(); renderCalendar(); }
 
     // --- DASHBOARD CORE ---
+    function addExpense() {
+        const amount = parseFloat(document.getElementById('exp-amount').value);
+        let defaultNote = currentCategory;
+        if(currentCategory.includes(' ')) defaultNote = currentCategory.substring(currentCategory.indexOf(' ') + 1);
+        
+        const note = document.getElementById('exp-note').value || defaultNote;
+        
+        if (!amount || amount <= 0) return alert("Enter valid amount");
+        if (!currentCategory) return alert("Please create a category in settings first.");
+
+        let timestamp = customOverrideDate || new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+
+        expenses.push({ id: Date.now(), amount, category: currentCategory, note, date: timestamp });
+        localStorage.setItem('pro_exp_data', JSON.stringify(expenses));
+        
+        updateFilterMonth(timestamp.slice(0, 7));
+        
+        document.getElementById('exp-amount').value = ''; document.getElementById('exp-note').value = '';
+        customOverrideDate = null; document.getElementById('calendar-override-notice').classList.remove('active');
+        
+        const btn = document.querySelector('#home button');
+        btn.innerText = "✅ Saved!"; btn.style.background = "#10b981";
+        setTimeout(() => { btn.innerText = "Record Transaction"; btn.style.background = "var(--accent)"; }, 1500);
+    }
+
     function updateDashboard() {
         const [fYear, fMonth] = currentFilterMonth.split('-');
         const filteredExpenses = expenses.filter(exp => {
@@ -699,7 +785,6 @@
                 document.getElementById('override-date-text').innerText = thisDayDate.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
                 document.getElementById('calendar-override-notice').classList.add('active');
                 switchTab('home', document.querySelectorAll('.nav-item')[0]); 
-                // Auto open sheet when a day is clicked!
                 openBottomSheet();
             };
             grid.appendChild(div);
