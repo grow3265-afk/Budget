@@ -63,6 +63,8 @@
         button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
         button.secondary:hover { background: var(--bg-hover); color: var(--text-main); }
         .flex-row { display: flex; gap: 10px; margin-bottom: 20px; }
+        
+        .month-filter { width: auto; margin-bottom: 0; padding: 8px 15px; font-weight: 600; cursor: pointer; color: var(--accent); border-color: rgba(59, 130, 246, 0.5); background: rgba(59, 130, 246, 0.05); }
 
         /* --- Dropdown UI --- */
         .custom-select-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
@@ -74,7 +76,7 @@
 
         /* --- History & Elements --- */
         .suggestion-box { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--accent); padding: 15px; border-radius: 8px; font-size: 14px; line-height: 1.6; }
-        .date-header { font-size: 14px; font-weight: 600; color: var(--text-muted); margin: 25px 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        .date-header { font-size: 14px; font-weight: 600; color: var(--text-muted); margin: 25px 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; }
         .expense-row { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-input); border-radius: 10px; margin-bottom: 10px; border-left: 4px solid transparent; transition: 0.2s; border: 1px solid var(--border);}
         .expense-row:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
         .cat-badge { background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; color: #e2e8f0; display: inline-block;}
@@ -103,6 +105,8 @@
         .balance-val { font-size: 22px; font-weight: 700; }
         .val-danger { color: #f87171; }
         .val-success { color: #34d399; }
+        
+        .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
     </style>
 </head>
 <body>
@@ -125,6 +129,11 @@
     
     <div class="scrollable-area">
         <div id="home" class="tab-content active">
+            <div class="header-section">
+                <h1 style="margin: 0; font-size: 24px;">Dashboard</h1>
+                <input type="month" id="home-month-filter" class="month-filter" onchange="updateFilterMonth(this.value)">
+            </div>
+            
             <div class="dashboard-grid">
                 <div class="card">
                     <h2 class="card-title">📝 Record Expense</h2>
@@ -177,7 +186,10 @@
 
         <div id="history" class="tab-content">
             <div class="card" style="max-width: 800px; margin: 0 auto;">
-                <h2 class="card-title">All Transactions</h2>
+                <div class="header-section" style="margin-bottom: 10px;">
+                    <h2 class="card-title" style="margin: 0; border: none; padding: 0;">All Transactions</h2>
+                    <input type="month" id="history-month-filter" class="month-filter" onchange="updateFilterMonth(this.value)">
+                </div>
                 <div id="history-list"></div>
             </div>
         </div>
@@ -245,6 +257,7 @@
     // System Data
     let expenses = JSON.parse(localStorage.getItem('pro_exp_data')) || [];
     let categories = JSON.parse(localStorage.getItem('pro_cat_data')) || ['🍔 Food', '🚗 Transport', '🛍️ Shopping', '🧾 Bills'];
+    let currentFilterMonth = new Date().toISOString().slice(0, 7); // Default to current month (YYYY-MM)
     
     // Massive Smart Dictionary
     const smartDictionary = {
@@ -267,10 +280,28 @@
 
     window.onload = function() {
         document.getElementById('set-income').value = localStorage.getItem('pro_income') || '';
+        document.getElementById('home-month-filter').value = currentFilterMonth;
+        document.getElementById('history-month-filter').value = currentFilterMonth;
+        
         renderCategories();
         updateDashboard();
         renderCalendar();
     };
+
+    // --- Filter Logic ---
+    function updateFilterMonth(val) {
+        currentFilterMonth = val;
+        document.getElementById('home-month-filter').value = val;
+        document.getElementById('history-month-filter').value = val;
+        
+        // Sync Calendar to the newly selected month filter
+        const [y, m] = val.split('-');
+        currentDate.setFullYear(parseInt(y));
+        currentDate.setMonth(parseInt(m) - 1);
+        
+        updateDashboard();
+        renderCalendar();
+    }
 
     function saveIncome() {
         localStorage.setItem('pro_income', document.getElementById('set-income').value);
@@ -328,19 +359,14 @@
         const nameInput = document.getElementById('set-cat-name').value.trim();
         
         if (!nameInput) return alert("Please enter a category name.");
-
         let finalEmoji = '';
 
-        if (emojiInput) {
-            finalEmoji = emojiInput;
-        } else {
+        if (emojiInput) { finalEmoji = emojiInput; } 
+        else {
             const words = nameInput.toLowerCase().split(' ');
             for (let w of words) {
                 for (const [keyword, emoji] of Object.entries(smartDictionary)) {
-                    if (w.includes(keyword)) {
-                        finalEmoji = emoji;
-                        break;
-                    }
+                    if (w.includes(keyword)) { finalEmoji = emoji; break; }
                 }
                 if(finalEmoji) break; 
             }
@@ -390,10 +416,11 @@
         expenses.push({ id: Date.now(), amount, category: currentCategory, note, date: timestamp });
         localStorage.setItem('pro_exp_data', JSON.stringify(expenses));
         
+        // Auto-switch filter to the month of the newly added expense
+        updateFilterMonth(timestamp.slice(0, 7));
+        
         document.getElementById('exp-amount').value = ''; document.getElementById('exp-note').value = '';
         customOverrideDate = null; document.getElementById('calendar-override-notice').classList.remove('active');
-        
-        updateDashboard(); renderCalendar();
         
         const btn = document.querySelector('#home button');
         btn.innerText = "✅ Saved!"; btn.style.background = "#10b981";
@@ -404,8 +431,15 @@
 
     // Dashboard & Analytics
     function updateDashboard() {
+        // FILTER EXPENSES BY SELECTED MONTH
+        const [fYear, fMonth] = currentFilterMonth.split('-');
+        const filteredExpenses = expenses.filter(exp => {
+            const d = new Date(exp.date);
+            return d.getFullYear() == fYear && (d.getMonth() + 1) == parseInt(fMonth);
+        });
+
         let total = 0; const catTotals = {};
-        expenses.forEach(exp => { total += exp.amount; catTotals[exp.category] = (catTotals[exp.category] || 0) + exp.amount; });
+        filteredExpenses.forEach(exp => { total += exp.amount; catTotals[exp.category] = (catTotals[exp.category] || 0) + exp.amount; });
         
         document.getElementById('total-spent-display').innerText = 'RM ' + total.toFixed(2);
         
@@ -418,13 +452,14 @@
         if (remaining < 0) { leftDisplay.style.color = '#f87171'; } 
         else { leftDisplay.style.color = '#34d399'; }
         
-        renderHistory(); renderChart(catTotals); generateSuggestion(catTotals, total, income);
+        renderHistory(filteredExpenses); 
+        renderChart(catTotals); 
+        generateSuggestion(catTotals, total, income, filteredExpenses.length);
     }
 
-    // THE SUGGESTIONS ARE BACK!
-    function generateSuggestion(catTotals, totalSpent, income) {
+    function generateSuggestion(catTotals, totalSpent, income, expenseCount) {
         const box = document.getElementById('suggestion-text');
-        if (expenses.length === 0) return box.innerHTML = "Add some expenses to see personalized insights!";
+        if (expenseCount === 0) return box.innerHTML = "Add some expenses this month to see personalized insights!";
         
         let maxCat = ''; let maxAmt = 0;
         for (const [cat, amt] of Object.entries(catTotals)) { if (amt > maxAmt) { maxAmt = amt; maxCat = cat; } }
@@ -435,24 +470,34 @@
             warning = `<strong style="color: #f87171;">⚠️ Warning: You have exceeded your monthly budget!</strong><br><br>`;
         }
         
-        box.innerHTML = `${warning}Your highest expense is <strong>${maxCat}</strong>, taking up <strong>${pct}%</strong> of your total spending (RM ${maxAmt.toFixed(2)}). <br><br> 💡 <em>Tip: Try to find one small way to reduce your ${maxCat} spending to stay within your budget!</em>`;
+        box.innerHTML = `${warning}Your highest expense this month is <strong>${maxCat}</strong>, taking up <strong>${pct}%</strong> of your spending (RM ${maxAmt.toFixed(2)}). <br><br> 💡 <em>Tip: Try to find one small way to reduce your ${maxCat} spending to stay within your budget!</em>`;
     }
 
-    function renderHistory() {
+    function renderHistory(filteredExpenses) {
         const list = document.getElementById('history-list');
         list.innerHTML = '';
-        if(expenses.length === 0) return list.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>No transactions yet.</p>";
+        if(filteredExpenses.length === 0) return list.innerHTML = "<p style='color:var(--text-muted); text-align:center; padding: 20px 0;'>No transactions found for this month.</p>";
 
-        const sorted = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const sorted = [...filteredExpenses].sort((a, b) => new Date(b.date) - new Date(a.date));
+        
         const grouped = {};
+        const dailyTotals = {};
+        
         sorted.forEach(exp => {
             const dateStr = new Date(exp.date).toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            if(!grouped[dateStr]) grouped[dateStr] = [];
+            if(!grouped[dateStr]) { grouped[dateStr] = []; dailyTotals[dateStr] = 0; }
             grouped[dateStr].push(exp);
+            dailyTotals[dateStr] += exp.amount;
         });
 
         for (const [date, items] of Object.entries(grouped)) {
-            let html = `<div class="date-header">${date}</div>`;
+            // Updated Date Header to show Daily Total!
+            let html = `
+                <div class="date-header">
+                    <span>${date}</span>
+                    <span style="color: var(--text-main); font-size: 15px;">RM ${dailyTotals[date].toFixed(2)}</span>
+                </div>`;
+                
             items.forEach(exp => {
                 const timeStr = new Date(exp.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 html += `
@@ -488,7 +533,19 @@
     }
 
     // Calendar Logic
-    function changeMonth(dir) { currentDate.setMonth(currentDate.getMonth() + dir); renderCalendar(); }
+    function changeMonth(dir) { 
+        currentDate.setMonth(currentDate.getMonth() + dir); 
+        
+        // Sync the Global Filter to match the calendar navigation
+        const y = currentDate.getFullYear();
+        const m = String(currentDate.getMonth() + 1).padStart(2, '0');
+        currentFilterMonth = `${y}-${m}`;
+        document.getElementById('home-month-filter').value = currentFilterMonth;
+        document.getElementById('history-month-filter').value = currentFilterMonth;
+        
+        updateDashboard();
+        renderCalendar(); 
+    }
 
     function renderCalendar() {
         const year = currentDate.getFullYear();
