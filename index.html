@@ -95,7 +95,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Prevent body scroll */
+            overflow: hidden; 
         }
         
         .scrollable-area {
@@ -159,7 +159,6 @@
         .suggestion-box { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--accent); padding: 15px; border-radius: 8px; font-size: 14px; line-height: 1.5; margin-bottom: 20px;}
         .expense-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-input); border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--accent); }
         .delete-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 5px 10px; width: auto; border-radius: 6px; }
-        
         .date-header { font-size: 14px; font-weight: 600; color: var(--text-muted); margin: 20px 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
 
         /* --- Calendar --- */
@@ -172,6 +171,9 @@
         .calendar-day.today { background: rgba(59, 130, 246, 0.1); font-weight: bold; border: 1px solid var(--accent); }
         .day-number { font-size: 14px; }
         .day-expense { font-size: 11px; color: #f87171; margin-top: auto; font-weight: 600; }
+        
+        .calendar-notice { display: none; background: rgba(59, 130, 246, 0.1); color: var(--accent); padding: 10px; border-radius: 6px; text-align: center; font-size: 14px; margin-bottom: 15px; font-weight: 600;}
+        .calendar-notice.active { display: block; }
     </style>
 </head>
 <body>
@@ -186,7 +188,6 @@
 </div>
 
 <div class="main-content">
-    
     <div class="mobile-header">
         <h2 style="margin:0; font-size:18px; color: var(--text-main);">ProTracker</h2>
         <button class="menu-btn" onclick="toggleSidebar()">☰</button>
@@ -198,25 +199,27 @@
                 
                 <div class="card">
                     <h2 class="card-title">📝 Record Expense</h2>
+                    
+                    <div id="calendar-override-notice" class="calendar-notice">
+                        Adding expense for: <span id="override-date-text"></span>
+                    </div>
+
                     <label>Amount (RM)</label>
                     <input type="number" id="exp-amount" placeholder="0.00" step="0.01">
 
                     <label>Category</label>
                     <div class="custom-select-wrapper">
                         <div class="custom-select" id="selected-category" onclick="toggleDropdown()">
-                            <span id="cat-text">Food</span>
+                            <span id="cat-text">🍔 Food</span>
                             <span>▼</span>
                         </div>
                         <div class="custom-options" id="category-dropdown"></div>
                     </div>
 
                     <div class="flex-row">
-                        <input type="text" id="new-category-name" placeholder="New category name" style="margin-bottom:0;">
+                        <input type="text" id="new-category-name" placeholder="Type category (e.g. Coffee)" style="margin-bottom:0;">
                         <button style="width:auto; padding: 0 15px; background: var(--bg-hover);" onclick="addNewCategory()">+ Add</button>
                     </div>
-
-                    <label>Date & Time</label>
-                    <input type="datetime-local" id="exp-date">
 
                     <label>Note (Optional)</label>
                     <input type="text" id="exp-note" placeholder="e.g. foodpanda, Touch n' Go reload...">
@@ -261,20 +264,33 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <script>
     // System Data
     let expenses = JSON.parse(localStorage.getItem('pro_exp_data')) || [];
-    let categories = JSON.parse(localStorage.getItem('pro_cat_data')) || ['Food', 'Transport', 'Shopping', 'Bills'];
+    let categories = JSON.parse(localStorage.getItem('pro_cat_data')) || ['🍔 Food', '🚗 Transport', '🛍️ Shopping', '🧾 Bills'];
+    
+    // --- SMART DICTIONARY FOR EMOJIS ---
+    const smartDictionary = {
+        'coffee': '☕', 'cafe': '☕', 'starbucks': '☕', 'boba': '🧋', 'drink': '🥤',
+        'medical': '🏥', 'hospital': '🏥', 'clinic': '🏥', 'doctor': '👨‍⚕️', 'medicine': '💊', 'pharmacy': '💊',
+        'food': '🍔', 'restaurant': '🍽️', 'pizza': '🍕', 'kfc': '🍗', 'mcdonalds': '🍔',
+        'transport': '🚗', 'grab': '🚗', 'petrol': '⛽', 'gas': '⛽', 'toll': '🛣️', 'parking': '🅿️',
+        'shopping': '🛍️', 'clothes': '👕', 'shoes': '👟',
+        'bills': '🧾', 'water': '💧', 'electricity': '⚡', 'internet': '🌐', 'phone': '📱',
+        'entertainment': '🎮', 'movie': '🍿', 'cinema': '🍿', 'game': '🎮', 'steam': '🕹️',
+        'groceries': '🛒', 'market': '🥬', 'supermarket': '🛒'
+    };
+    const defaultEmoji = '📌';
+
     let chartInstance = null;
     let currentCategory = categories[0];
     let currentDate = new Date(); 
+    let customOverrideDate = null; // Used when clicking the calendar
 
     // Initialize App
     window.onload = function() {
-        setCurrentTime();
         renderCategories();
         updateDashboard();
         renderCalendar();
@@ -296,9 +312,12 @@
         document.getElementById(tabId).classList.add('active');
         element.classList.add('active');
         
-        // Auto-close sidebar on mobile after clicking a tab
-        if(window.innerWidth <= 768) {
-            toggleSidebar();
+        if(window.innerWidth <= 768) toggleSidebar();
+        
+        // If they leave home tab, clear the calendar override so it resets to "today"
+        if(tabId !== 'home') {
+            customOverrideDate = null;
+            document.getElementById('calendar-override-notice').classList.remove('active');
         }
     }
 
@@ -329,37 +348,67 @@
         document.getElementById('cat-text').innerText = currentCategory;
     }
     function selectCategory(cat) { currentCategory = cat; document.getElementById('cat-text').innerText = cat; document.getElementById('category-dropdown').classList.remove('show'); }
+    
+    // --- SMART ADD CATEGORY LOGIC ---
     function addNewCategory() {
         const input = document.getElementById('new-category-name');
-        const newCat = input.value.trim();
-        if (newCat && !categories.includes(newCat)) {
-            categories.push(newCat);
-            localStorage.setItem('pro_cat_data', JSON.stringify(categories));
-            renderCategories();
-            selectCategory(newCat);
+        let newCat = input.value.trim();
+        
+        if (newCat) {
+            // Check dictionary for a match
+            let foundEmoji = defaultEmoji;
+            const searchWord = newCat.toLowerCase();
+            
+            for (const [keyword, emoji] of Object.entries(smartDictionary)) {
+                if (searchWord.includes(keyword)) {
+                    foundEmoji = emoji;
+                    break; // Stop at first match
+                }
+            }
+            
+            // Combine them
+            const formattedCategory = `${foundEmoji} ${newCat}`;
+
+            if (!categories.includes(formattedCategory)) {
+                categories.push(formattedCategory);
+                localStorage.setItem('pro_cat_data', JSON.stringify(categories));
+                renderCategories();
+                selectCategory(formattedCategory);
+            }
         }
         input.value = '';
     }
+    
     function deleteCategory(index) { if(confirm("Delete this category?")) { categories.splice(index, 1); localStorage.setItem('pro_cat_data', JSON.stringify(categories)); renderCategories(); } }
 
     // --- Expense Logic ---
-    function setCurrentTime() {
-        const now = new Date();
-        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-        document.getElementById('exp-date').value = now.toISOString().slice(0, 16);
-    }
     function addExpense() {
         const amount = parseFloat(document.getElementById('exp-amount').value);
-        const note = document.getElementById('exp-note').value || currentCategory;
-        const timestamp = document.getElementById('exp-date').value;
+        const note = document.getElementById('exp-note').value || currentCategory.substring(currentCategory.indexOf(' ') + 1); // strip emoji from default note
+        
         if (!amount || amount <= 0) return alert("Enter valid amount");
+
+        // Determine the date (Use override if set, otherwise use right now)
+        let timestamp;
+        if (customOverrideDate) {
+            timestamp = customOverrideDate;
+        } else {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            timestamp = now.toISOString().slice(0, 16);
+        }
 
         expenses.push({ id: Date.now(), amount, category: currentCategory, note, date: timestamp });
         localStorage.setItem('pro_exp_data', JSON.stringify(expenses));
         
+        // Reset form
         document.getElementById('exp-amount').value = '';
         document.getElementById('exp-note').value = '';
-        setCurrentTime();
+        
+        // Reset override back to normal
+        customOverrideDate = null;
+        document.getElementById('calendar-override-notice').classList.remove('active');
+        
         updateDashboard();
         renderCalendar();
     }
@@ -389,10 +438,8 @@
         list.innerHTML = '';
         if(expenses.length === 0) return list.innerHTML = "<p style='color:var(--text-muted);'>No transactions yet.</p>";
 
-        // Sort all expenses by date (newest first)
         const sorted = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
         
-        // Group by day string
         const grouped = {};
         sorted.forEach(exp => {
             const dateStr = new Date(exp.date).toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -400,7 +447,6 @@
             grouped[dateStr].push(exp);
         });
 
-        // Render groups
         for (const [date, items] of Object.entries(grouped)) {
             let html = `<div class="date-header">${date}</div>`;
             items.forEach(exp => {
@@ -431,12 +477,12 @@
         }
         chartInstance = new Chart(ctx, {
             type: 'doughnut',
-            data: { labels: Object.keys(catTotals), datasets: [{ data: Object.values(catTotals), backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'], borderWidth: 2, borderColor: '#151b2b' }] },
+            data: { labels: Object.keys(catTotals), datasets: [{ data: Object.values(catTotals), backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'], borderWidth: 2, borderColor: '#151b2b' }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: {color: '#9ca3af'} } } }
         });
     }
 
-    // --- Calendar Logic with Spend Data ---
+    // --- Calendar Logic ---
     function changeMonth(dir) { currentDate.setMonth(currentDate.getMonth() + dir); renderCalendar(); }
 
     function renderCalendar() {
@@ -457,7 +503,6 @@
             const thisDayDate = new Date(year, month, i);
             const thisDayStr = thisDayDate.toDateString();
             
-            // Calculate total spent on this specific day
             const dayExpenses = expenses.filter(e => new Date(e.date).toDateString() === thisDayStr);
             const dayTotal = dayExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
@@ -468,21 +513,25 @@
             div.className = classes;
             
             let innerHTML = `<span class="day-number">${i}</span>`;
-            if (dayTotal > 0) {
-                // Display RM spent on this day
-                innerHTML += `<span class="day-expense">RM ${dayTotal.toFixed(0)}</span>`;
-            }
+            if (dayTotal > 0) innerHTML += `<span class="day-expense">RM ${dayTotal.toFixed(0)}</span>`;
             
             div.innerHTML = innerHTML;
+            
+            // Handle clicking a day on the calendar
             div.onclick = () => {
-                const formattedDate = new Date(year, month, i, 12, 0).toISOString().slice(0, 16);
-                document.getElementById('exp-date').value = formattedDate;
+                // Generate a timestamp for noon on that specific day
+                customOverrideDate = new Date(year, month, i, 12, 0).toISOString().slice(0, 16);
+                
+                // Show the blue banner on the home screen
+                document.getElementById('override-date-text').innerText = thisDayDate.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
+                document.getElementById('calendar-override-notice').classList.add('active');
+                
+                // Jump to home tab
                 switchTab('home', document.querySelectorAll('.nav-item')[0]); 
             };
             grid.appendChild(div);
         }
     }
 </script>
-
 </body>
 </html>
