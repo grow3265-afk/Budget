@@ -32,85 +32,25 @@
         }
 
         /* --- Mobile Header & Menu Toggle --- */
-        .mobile-header {
-            display: none;
-            background: var(--bg-card);
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border);
-            align-items: center;
-            justify-content: space-between;
-        }
-        .menu-btn {
-            background: none;
-            border: none;
-            color: var(--text-main);
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-        }
-        
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 40;
-        }
+        .mobile-header { display: none; background: var(--bg-card); padding: 15px 20px; border-bottom: 1px solid var(--border); align-items: center; justify-content: space-between; }
+        .menu-btn { background: none; border: none; color: var(--text-main); font-size: 24px; cursor: pointer; padding: 0; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 40; }
 
         /* --- Sidebar Navigation --- */
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--bg-card);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            padding: 20px 0;
-            z-index: 50;
-            transition: transform 0.3s ease;
-        }
-
-        .sidebar h2 {
-            padding: 0 20px;
-            font-size: 20px;
-            background: linear-gradient(to right, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            color: transparent;
-            margin-bottom: 30px;
-        }
-
-        .nav-item {
-            padding: 15px 20px;
-            cursor: pointer;
-            color: var(--text-muted);
-            font-weight: 500;
-            transition: all 0.2s;
-            border-left: 3px solid transparent;
-        }
-
+        .sidebar { width: var(--sidebar-width); background-color: var(--bg-card); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 0; z-index: 50; transition: transform 0.3s ease; }
+        .sidebar h2 { padding: 0 20px; font-size: 20px; background: linear-gradient(to right, #3b82f6, #8b5cf6); -webkit-background-clip: text; color: transparent; margin-bottom: 30px; }
+        .nav-item { padding: 15px 20px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 10px;}
         .nav-item:hover { background-color: var(--bg-input); color: var(--text-main); }
         .nav-item.active { background-color: rgba(59, 130, 246, 0.1); color: var(--accent); border-left-color: var(--accent); }
 
         /* --- Main Content Area --- */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; 
-        }
-        
-        .scrollable-area {
-            padding: 30px;
-            overflow-y: auto;
-            flex: 1;
-        }
-
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .scrollable-area { padding: 30px; overflow-y: auto; flex: 1; }
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         
-        /* Mobile Adjustments */
         @media (max-width: 768px) { 
             .dashboard-grid { grid-template-columns: 1fr; } 
             .sidebar { position: fixed; height: 100%; transform: translateX(-100%); }
@@ -120,60 +60,52 @@
             .scrollable-area { padding: 15px; }
         }
 
-        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .card-title { font-size: 16px; font-weight: 600; color: var(--text-muted); margin-top: 0; margin-bottom: 16px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card-title { font-size: 18px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;}
 
         /* --- Forms & Inputs --- */
-        label { display: block; font-size: 13px; margin-bottom: 8px; color: var(--text-muted); }
-        input {
-            width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border);
-            border-radius: 8px; color: var(--text-main); font-family: 'Inter'; box-sizing: border-box; margin-bottom: 16px;
-        }
-        input:focus { outline: none; border-color: var(--accent); }
-
-        button {
-            padding: 12px 20px; background: var(--accent); color: white; border: none; border-radius: 8px;
-            font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%;
-        }
+        label { display: block; font-size: 13px; margin-bottom: 8px; color: var(--text-muted); font-weight: 500;}
+        input { width: 100%; padding: 12px 15px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-family: 'Inter'; box-sizing: border-box; margin-bottom: 20px; font-size: 15px;}
+        input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+        button { padding: 12px 20px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%; font-size: 15px;}
         button:hover { background: var(--accent-hover); }
-        .flex-row { display: flex; gap: 10px; margin-bottom: 16px; }
+        .flex-row { display: flex; gap: 10px; margin-bottom: 20px; }
 
         /* --- Custom Dropdown UI --- */
-        .custom-select-wrapper { position: relative; width: 100%; margin-bottom: 16px; }
-        .custom-select {
-            padding: 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px;
-            cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-        }
-        .custom-options {
-            position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 8px; margin-top: 5px; z-index: 10; max-height: 200px; overflow-y: auto; display: none;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.3);
-        }
+        .custom-select-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
+        .custom-select { padding: 12px 15px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 15px;}
+        .custom-options { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; margin-top: 5px; z-index: 10; max-height: 200px; overflow-y: auto; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .custom-options.show { display: block; }
-        .custom-option { padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .custom-option { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .custom-option:hover { background: var(--bg-hover); }
-        .del-cat-btn { color: var(--danger); font-size: 16px; font-weight: bold; cursor: pointer; padding: 0 5px; }
-        .del-cat-btn:hover { color: #f87171; }
 
         /* --- Elements --- */
-        .suggestion-box { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--accent); padding: 15px; border-radius: 8px; font-size: 14px; line-height: 1.5; margin-bottom: 20px;}
-        .expense-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-input); border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--accent); }
-        .delete-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 5px 10px; width: auto; border-radius: 6px; }
-        .date-header { font-size: 14px; font-weight: 600; color: var(--text-muted); margin: 20px 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .suggestion-box { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--accent); padding: 15px; border-radius: 8px; font-size: 14px; line-height: 1.6; }
+        .date-header { font-size: 14px; font-weight: 600; color: var(--text-muted); margin: 25px 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        
+        /* Upgraded Expense Row */
+        .expense-row { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-input); border-radius: 10px; margin-bottom: 10px; border-left: 4px solid transparent; transition: 0.2s; border: 1px solid var(--border);}
+        .expense-row:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
+        .cat-badge { background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; color: #e2e8f0; display: inline-block;}
+        .delete-btn { background: rgba(239, 68, 68, 0.15); color: #f87171; padding: 6px 12px; width: auto; border-radius: 6px; margin-left: 15px; transition: 0.2s;}
+        .delete-btn:hover { background: var(--danger); color: white; }
 
         /* --- Calendar --- */
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: bold;}
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-weight: bold;}
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .day-name { font-size: 12px; color: var(--text-muted); padding-bottom: 10px;}
-        .calendar-day { background: var(--bg-input); padding: 10px 5px; border-radius: 6px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; min-height: 50px; display: flex; flex-direction: column; align-items: center;}
+        .day-name { font-size: 12px; color: var(--text-muted); padding-bottom: 10px; font-weight: 600;}
+        .calendar-day { background: var(--bg-input); padding: 10px 5px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center;}
         .calendar-day:hover { border-color: var(--accent); background: var(--bg-hover); }
-        .calendar-day.empty { background: transparent; cursor: default; }
-        .calendar-day.today { background: rgba(59, 130, 246, 0.1); font-weight: bold; border: 1px solid var(--accent); }
-        .day-number { font-size: 14px; }
-        .day-expense { font-size: 11px; color: #f87171; margin-top: auto; font-weight: 600; }
+        .calendar-day.empty { background: transparent; cursor: default; border: none;}
+        .calendar-day.today { background: rgba(59, 130, 246, 0.15); border: 1px solid var(--accent); }
+        .day-number { font-size: 15px; font-weight: 500;}
+        .day-expense { font-size: 12px; color: #f87171; margin-top: 5px; font-weight: 700; }
         
-        .calendar-notice { display: none; background: rgba(59, 130, 246, 0.1); color: var(--accent); padding: 10px; border-radius: 6px; text-align: center; font-size: 14px; margin-bottom: 15px; font-weight: 600;}
+        .calendar-notice { display: none; background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 12px; border-radius: 8px; text-align: center; font-size: 14px; margin-bottom: 20px; font-weight: 600; border: 1px solid rgba(59, 130, 246, 0.3);}
         .calendar-notice.active { display: block; }
+        
+        /* Settings List */
+        .setting-cat-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: var(--bg-input); border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border);}
     </style>
 </head>
 <body>
@@ -185,6 +117,7 @@
     <div class="nav-item active" onclick="switchTab('home', this)">🏠 Home</div>
     <div class="nav-item" onclick="switchTab('history', this)">🕰️ Transaction History</div>
     <div class="nav-item" onclick="switchTab('calendar', this)">📅 Calendar</div>
+    <div class="nav-item" onclick="switchTab('settings', this)" style="margin-top: auto; border-top: 1px solid var(--border);">⚙️ Settings</div>
 </div>
 
 <div class="main-content">
@@ -196,7 +129,6 @@
     <div class="scrollable-area">
         <div id="home" class="tab-content active">
             <div class="dashboard-grid">
-                
                 <div class="card">
                     <h2 class="card-title">📝 Record Expense</h2>
                     
@@ -210,15 +142,10 @@
                     <label>Category</label>
                     <div class="custom-select-wrapper">
                         <div class="custom-select" id="selected-category" onclick="toggleDropdown()">
-                            <span id="cat-text">🍔 Food</span>
+                            <span id="cat-text">Select Category</span>
                             <span>▼</span>
                         </div>
                         <div class="custom-options" id="category-dropdown"></div>
-                    </div>
-
-                    <div class="flex-row">
-                        <input type="text" id="new-category-name" placeholder="Type category (e.g. Coffee)" style="margin-bottom:0;">
-                        <button style="width:auto; padding: 0 15px; background: var(--bg-hover);" onclick="addNewCategory()">+ Add</button>
                     </div>
 
                     <label>Note (Optional)</label>
@@ -235,7 +162,7 @@
                     <div class="card">
                         <h2 class="card-title">📊 Monthly Overview</h2>
                         <div style="height: 200px; width: 100%;"><canvas id="expenseChart"></canvas></div>
-                        <h3 style="text-align: center; margin-top: 15px;" id="total-spent-display">RM 0.00</h3>
+                        <h3 style="text-align: center; margin-top: 20px; font-size: 22px;" id="total-spent-display">RM 0.00</h3>
                     </div>
                 </div>
             </div>
@@ -251,9 +178,9 @@
         <div id="calendar" class="tab-content">
             <div class="card" style="max-width: 800px; margin: 0 auto;">
                 <div class="calendar-header">
-                    <button style="width: auto; padding: 5px 15px;" onclick="changeMonth(-1)">◀</button>
-                    <h2 id="calendar-month-year" style="margin:0;">Month Year</h2>
-                    <button style="width: auto; padding: 5px 15px;" onclick="changeMonth(1)">▶</button>
+                    <button style="width: auto; padding: 8px 15px;" onclick="changeMonth(-1)">◀</button>
+                    <h2 id="calendar-month-year" style="margin:0; font-size: 18px;">Month Year</h2>
+                    <button style="width: auto; padding: 8px 15px;" onclick="changeMonth(1)">▶</button>
                 </div>
                 
                 <div class="calendar-grid">
@@ -261,6 +188,35 @@
                     <div class="day-name">Wed</div><div class="day-name">Thu</div><div class="day-name">Fri</div><div class="day-name">Sat</div>
                 </div>
                 <div class="calendar-grid" id="calendar-days"></div>
+            </div>
+        </div>
+
+        <div id="settings" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h2 class="card-title">🏷️ Add New Category</h2>
+                    
+                    <div class="flex-row" style="margin-bottom: 10px;">
+                        <div style="flex: 1;">
+                            <label>Symbol / Emoji (Optional)</label>
+                            <input type="text" id="set-cat-emoji" placeholder="e.g. ☕" maxlength="2">
+                        </div>
+                        <div style="flex: 3;">
+                            <label>Category Name</label>
+                            <input type="text" id="set-cat-name" placeholder="e.g. Coffee">
+                        </div>
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: -5px; margin-bottom: 20px;">
+                        *If you leave the symbol blank, the app will try to auto-detect one for you.
+                    </p>
+                    <button onclick="addNewCategory()">+ Save Category</button>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">📂 Manage Categories</h2>
+                    <div id="settings-cat-list" style="max-height: 400px; overflow-y: auto;">
+                        </div>
+                </div>
             </div>
         </div>
     </div>
@@ -271,25 +227,23 @@
     let expenses = JSON.parse(localStorage.getItem('pro_exp_data')) || [];
     let categories = JSON.parse(localStorage.getItem('pro_cat_data')) || ['🍔 Food', '🚗 Transport', '🛍️ Shopping', '🧾 Bills'];
     
-    // --- SMART DICTIONARY FOR EMOJIS ---
+    // --- SMART DICTIONARY ---
     const smartDictionary = {
         'coffee': '☕', 'cafe': '☕', 'starbucks': '☕', 'boba': '🧋', 'drink': '🥤',
         'medical': '🏥', 'hospital': '🏥', 'clinic': '🏥', 'doctor': '👨‍⚕️', 'medicine': '💊', 'pharmacy': '💊',
-        'food': '🍔', 'restaurant': '🍽️', 'pizza': '🍕', 'kfc': '🍗', 'mcdonalds': '🍔',
+        'food': '🍔', 'restaurant': '🍽️', 'pizza': '🍕', 'kfc': '🍗', 'mcdonalds': '🍔', 'wifi': '📶', 'internet': '🌐',
         'transport': '🚗', 'grab': '🚗', 'petrol': '⛽', 'gas': '⛽', 'toll': '🛣️', 'parking': '🅿️',
         'shopping': '🛍️', 'clothes': '👕', 'shoes': '👟',
-        'bills': '🧾', 'water': '💧', 'electricity': '⚡', 'internet': '🌐', 'phone': '📱',
+        'bills': '🧾', 'water': '💧', 'electricity': '⚡', 'phone': '📱',
         'entertainment': '🎮', 'movie': '🍿', 'cinema': '🍿', 'game': '🎮', 'steam': '🕹️',
         'groceries': '🛒', 'market': '🥬', 'supermarket': '🛒'
     };
-    const defaultEmoji = '📌';
 
     let chartInstance = null;
     let currentCategory = categories[0];
     let currentDate = new Date(); 
-    let customOverrideDate = null; // Used when clicking the calendar
+    let customOverrideDate = null; 
 
-    // Initialize App
     window.onload = function() {
         renderCategories();
         updateDashboard();
@@ -314,7 +268,6 @@
         
         if(window.innerWidth <= 768) toggleSidebar();
         
-        // If they leave home tab, clear the calendar override so it resets to "today"
         if(tabId !== 'home') {
             customOverrideDate = null;
             document.getElementById('calendar-override-notice').classList.remove('active');
@@ -326,73 +279,98 @@
     window.onclick = function(event) { if (!event.target.closest('.custom-select-wrapper')) { document.getElementById('category-dropdown').classList.remove('show'); } }
 
     function renderCategories() {
+        // Render Home Dropdown
         const dropdown = document.getElementById('category-dropdown');
         dropdown.innerHTML = '';
-        categories.forEach((cat, index) => {
+        categories.forEach((cat) => {
             const div = document.createElement('div');
             div.className = 'custom-option';
-            const textSpan = document.createElement('span');
-            textSpan.innerText = cat;
-            textSpan.onclick = () => selectCategory(cat);
-            div.appendChild(textSpan);
-            if(categories.length > 1) {
-                const delSpan = document.createElement('span');
-                delSpan.innerText = '×';
-                delSpan.className = 'del-cat-btn';
-                delSpan.onclick = (e) => { e.stopPropagation(); deleteCategory(index); };
-                div.appendChild(delSpan);
-            }
+            div.innerText = cat;
+            div.onclick = () => selectCategory(cat);
             dropdown.appendChild(div);
         });
-        if(!categories.includes(currentCategory)) currentCategory = categories[0];
-        document.getElementById('cat-text').innerText = currentCategory;
+
+        if(!categories.includes(currentCategory) && categories.length > 0) currentCategory = categories[0];
+        document.getElementById('cat-text').innerText = currentCategory || 'No Categories';
+
+        // Render Settings List
+        const setList = document.getElementById('settings-cat-list');
+        setList.innerHTML = '';
+        categories.forEach((cat, index) => {
+            setList.innerHTML += `
+                <div class="setting-cat-row">
+                    <span style="font-weight: 500;">${cat}</span>
+                    <button class="delete-btn" style="padding: 4px 10px; margin:0;" onclick="deleteCategory(${index})">Delete</button>
+                </div>
+            `;
+        });
     }
+
     function selectCategory(cat) { currentCategory = cat; document.getElementById('cat-text').innerText = cat; document.getElementById('category-dropdown').classList.remove('show'); }
     
-    // --- SMART ADD CATEGORY LOGIC ---
+    // --- SMART ADD CATEGORY LOGIC (FROM SETTINGS) ---
     function addNewCategory() {
-        const input = document.getElementById('new-category-name');
-        let newCat = input.value.trim();
+        const emojiInput = document.getElementById('set-cat-emoji').value.trim();
+        const nameInput = document.getElementById('set-cat-name').value.trim();
         
-        if (newCat) {
-            // Check dictionary for a match
-            let foundEmoji = defaultEmoji;
-            const searchWord = newCat.toLowerCase();
-            
+        if (!nameInput) return alert("Please enter a category name.");
+
+        let finalEmoji = '';
+
+        if (emojiInput) {
+            finalEmoji = emojiInput;
+        } else {
+            // Check dictionary if no emoji provided
+            const searchWord = nameInput.toLowerCase();
             for (const [keyword, emoji] of Object.entries(smartDictionary)) {
                 if (searchWord.includes(keyword)) {
-                    foundEmoji = emoji;
-                    break; // Stop at first match
+                    finalEmoji = emoji;
+                    break;
                 }
             }
-            
-            // Combine them
-            const formattedCategory = `${foundEmoji} ${newCat}`;
-
-            if (!categories.includes(formattedCategory)) {
-                categories.push(formattedCategory);
-                localStorage.setItem('pro_cat_data', JSON.stringify(categories));
-                renderCategories();
-                selectCategory(formattedCategory);
-            }
         }
-        input.value = '';
+        
+        // Format string. If no emoji at all, just use text.
+        const formattedCategory = finalEmoji ? `${finalEmoji} ${nameInput}` : nameInput;
+
+        if (!categories.includes(formattedCategory)) {
+            categories.push(formattedCategory);
+            localStorage.setItem('pro_cat_data', JSON.stringify(categories));
+            renderCategories();
+            selectCategory(formattedCategory); // Auto select it on home
+            
+            // Clear inputs
+            document.getElementById('set-cat-emoji').value = '';
+            document.getElementById('set-cat-name').value = '';
+            alert("Category added successfully!");
+        } else {
+            alert("This category already exists.");
+        }
     }
     
-    function deleteCategory(index) { if(confirm("Delete this category?")) { categories.splice(index, 1); localStorage.setItem('pro_cat_data', JSON.stringify(categories)); renderCategories(); } }
+    function deleteCategory(index) { 
+        if(categories.length === 1) return alert("You must have at least one category.");
+        if(confirm("Delete this category?")) { 
+            categories.splice(index, 1); 
+            localStorage.setItem('pro_cat_data', JSON.stringify(categories)); 
+            renderCategories(); 
+        } 
+    }
 
     // --- Expense Logic ---
     function addExpense() {
         const amount = parseFloat(document.getElementById('exp-amount').value);
-        const note = document.getElementById('exp-note').value || currentCategory.substring(currentCategory.indexOf(' ') + 1); // strip emoji from default note
+        // Strip emoji from default note if user didn't type a note
+        let defaultNote = currentCategory;
+        if(currentCategory.includes(' ')) defaultNote = currentCategory.substring(currentCategory.indexOf(' ') + 1);
+        
+        const note = document.getElementById('exp-note').value || defaultNote;
         
         if (!amount || amount <= 0) return alert("Enter valid amount");
+        if (!currentCategory) return alert("Please create a category in settings first.");
 
-        // Determine the date (Use override if set, otherwise use right now)
-        let timestamp;
-        if (customOverrideDate) {
-            timestamp = customOverrideDate;
-        } else {
+        let timestamp = customOverrideDate;
+        if (!timestamp) {
             const now = new Date();
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             timestamp = now.toISOString().slice(0, 16);
@@ -401,24 +379,29 @@
         expenses.push({ id: Date.now(), amount, category: currentCategory, note, date: timestamp });
         localStorage.setItem('pro_exp_data', JSON.stringify(expenses));
         
-        // Reset form
         document.getElementById('exp-amount').value = '';
         document.getElementById('exp-note').value = '';
         
-        // Reset override back to normal
         customOverrideDate = null;
         document.getElementById('calendar-override-notice').classList.remove('active');
         
         updateDashboard();
         renderCalendar();
+        
+        // Brief success feedback
+        const btn = document.querySelector('#home button');
+        btn.innerText = "✅ Saved!";
+        btn.style.background = "#10b981";
+        setTimeout(() => { btn.innerText = "Record Transaction"; btn.style.background = "var(--accent)"; }, 1500);
     }
+    
     function deleteExpense(id) { expenses = expenses.filter(e => e.id !== id); localStorage.setItem('pro_exp_data', JSON.stringify(expenses)); updateDashboard(); renderCalendar(); }
 
     // --- Dashboard & Analytics ---
     function updateDashboard() {
         let total = 0; const catTotals = {};
         expenses.forEach(exp => { total += exp.amount; catTotals[exp.category] = (catTotals[exp.category] || 0) + exp.amount; });
-        document.getElementById('total-spent-display').innerText = 'Total Spent: RM ' + total.toFixed(2);
+        document.getElementById('total-spent-display').innerText = 'RM ' + total.toFixed(2);
         
         renderHistory(); renderChart(catTotals); generateSuggestion(catTotals, total);
     }
@@ -429,14 +412,14 @@
         let maxCat = ''; let maxAmt = 0;
         for (const [cat, amt] of Object.entries(catTotals)) { if (amt > maxAmt) { maxAmt = amt; maxCat = cat; } }
         const pct = Math.round((maxAmt / totalSpent) * 100);
-        box.innerHTML = `Your highest expense right now is <strong>${maxCat}</strong>, taking up <strong>${pct}%</strong> of your total spending (RM ${maxAmt.toFixed(2)}). <br><br> 💡 <em>Tip: Try to find one small way to reduce your ${maxCat} spending this week to boost your savings!</em>`;
+        box.innerHTML = `Your highest expense is <strong>${maxCat}</strong>, taking up <strong>${pct}%</strong> of your total spending (RM ${maxAmt.toFixed(2)}). <br><br> 💡 <em>Tip: Try to find one small way to reduce your ${maxCat} spending this week to boost your savings!</em>`;
     }
 
-    // Group History by Date
+    // --- UPGRADED HISTORY UI ---
     function renderHistory() {
         const list = document.getElementById('history-list');
         list.innerHTML = '';
-        if(expenses.length === 0) return list.innerHTML = "<p style='color:var(--text-muted);'>No transactions yet.</p>";
+        if(expenses.length === 0) return list.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>No transactions yet.</p>";
 
         const sorted = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
         
@@ -453,13 +436,16 @@
                 const timeStr = new Date(exp.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 html += `
                     <div class="expense-row">
-                        <div>
-                            <strong style="display:block; margin-bottom:4px;">${exp.note}</strong>
-                            <span style="font-size:12px; color:var(--text-muted);">${exp.category} • ${timeStr}</span>
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <strong style="font-size: 16px; color: var(--text-main);">${exp.note}</strong>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <span class="cat-badge">${exp.category}</span>
+                                <span style="font-size: 13px; color: var(--text-muted);">${timeStr}</span>
+                            </div>
                         </div>
                         <div style="display:flex; align-items:center;">
-                            <span style="font-weight:bold; font-size:15px;">RM ${exp.amount.toFixed(2)}</span>
-                            <button class="delete-btn" style="margin-left:15px;" onclick="deleteExpense(${exp.id})">✕</button>
+                            <span style="font-weight:700; font-size:18px; color: var(--text-main);">RM ${exp.amount.toFixed(2)}</span>
+                            <button class="delete-btn" onclick="deleteExpense(${exp.id})">✕</button>
                         </div>
                     </div>
                 `;
@@ -517,16 +503,10 @@
             
             div.innerHTML = innerHTML;
             
-            // Handle clicking a day on the calendar
             div.onclick = () => {
-                // Generate a timestamp for noon on that specific day
                 customOverrideDate = new Date(year, month, i, 12, 0).toISOString().slice(0, 16);
-                
-                // Show the blue banner on the home screen
                 document.getElementById('override-date-text').innerText = thisDayDate.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
                 document.getElementById('calendar-override-notice').classList.add('active');
-                
-                // Jump to home tab
                 switchTab('home', document.querySelectorAll('.nav-item')[0]); 
             };
             grid.appendChild(div);
