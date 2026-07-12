@@ -188,7 +188,7 @@
     <div class="month-modal-content">
         <div class="mp-header">
             <button class="mp-year-btn" onclick="changePickerYear(-1)">◀</button>
-            <span id="mp-year-display">2026</span>
+            <span id="mp-year-display"></span>
             <button class="mp-year-btn" onclick="changePickerYear(1)">▶</button>
         </div>
         <div class="mp-grid" id="mp-grid"></div>
@@ -198,7 +198,7 @@
 <!-- Mobile Nav Overlay -->
 <div class="overlay" id="mobile-overlay" onclick="toggleSidebar()"></div>
 
-<!-- Sidebar Menu (Settings moved directly under Calendar) -->
+<!-- Sidebar Menu -->
 <div class="sidebar" id="sidebar">
     <h2>ProTracker</h2>
     <div class="nav-item active" onclick="switchTab('home', this)">🏠 Dashboard</div>
@@ -340,11 +340,13 @@
 </div>
 
 <script>
-    // --- VARIABLES & STATE ---
+    // --- VARIABLES & STATE (Safely Initialized Once) ---
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     let currentDate = new Date(); 
     
-    let currentFilterMonth = ''; 
+    // Safely structure current year/month
+    let currentFilterMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+    
     let expenses = JSON.parse(localStorage.getItem('pro_exp_data')) || [];
     let categories = JSON.parse(localStorage.getItem('pro_cat_data')) || ['🍔 Food', '🚗 Transport', '🛍️ Shopping', '🧾 Bills'];
     let chartInstance = null;
@@ -352,7 +354,6 @@
     let sheetInputStr = '';
     let sheetSelectedCat = categories[0];
     let pickerYear = currentDate.getFullYear();
-    let isAppInitialized = false;
 
     const smartDictionary = {
         'cloth': '👕', 'clothes': '👕', 'shirt': '👔', 'shoes': '👟', 'watch': '⌚',
@@ -366,6 +367,14 @@
         'shopping': '🛍️', 'shopee': '🛍️', 'lazada': '📦', 'grocery': '🛒',
         'entertainment': '🎮', 'movie': '🍿', 'game': '🎮', 'netflix': '📺',
         'home': '🏠', 'rent': '🔑', 'salary': '💰'
+    };
+
+    window.onload = function() {
+        document.getElementById('set-income').value = localStorage.getItem('pro_income') || '';
+        renderSettingsCategories();
+        
+        // Auto-run filter to current month immediately without crashing
+        updateFilterMonth(currentFilterMonth);
     };
 
     // --- BOTTOM SHEET & NUMPAD LOGIC ---
@@ -460,24 +469,31 @@
 
     // --- FILTER & MODAL LOGIC ---
     function updateFilterMonth(val) {
+        if (!val || val.indexOf('-') === -1) return; // Safety check
+        
         currentFilterMonth = val;
-        const [y, m] = val.split('-');
-        const displayStr = `${monthNames[parseInt(m)-1]} ${y}`;
+        const parts = val.split('-');
+        const y = parseInt(parts[0]);
+        const m = parseInt(parts[1]);
+        
+        if (isNaN(y) || isNaN(m)) return; // Safety check
+        
+        const displayStr = `${monthNames[m-1]} ${y}`;
         
         document.getElementById('home-month-display').innerText = displayStr;
         document.getElementById('history-month-display').innerText = displayStr;
         
-        currentDate.setFullYear(parseInt(y));
-        currentDate.setMonth(parseInt(m) - 1);
+        currentDate.setFullYear(y);
+        currentDate.setMonth(m - 1);
         
         updateDashboard();
         renderCalendar();
     }
 
     function openMonthPicker() {
-        const [y, m] = currentFilterMonth.split('-');
-        pickerYear = parseInt(y);
-        renderMonthPickerUI(parseInt(m) - 1);
+        const parts = currentFilterMonth.split('-');
+        pickerYear = parseInt(parts[0]);
+        renderMonthPickerUI(parseInt(parts[1]) - 1);
         document.getElementById('month-modal').classList.add('show');
     }
 
@@ -488,8 +504,9 @@
         document.getElementById('mp-year-display').innerText = pickerYear;
         const grid = document.getElementById('mp-grid');
         grid.innerHTML = '';
-        const [currY, currM] = currentFilterMonth.split('-');
-        const highlightMonth = (pickerYear === parseInt(currY)) ? (parseInt(currM) - 1) : activeMonthIndex;
+        
+        const parts = currentFilterMonth.split('-');
+        const highlightMonth = (pickerYear === parseInt(parts[0])) ? (parseInt(parts[1]) - 1) : activeMonthIndex;
 
         monthNames.forEach((mName, index) => {
             const btn = document.createElement('div');
@@ -628,12 +645,15 @@
     }
 
     function updateDashboard() {
-        if (!currentFilterMonth) return; // Prevent running before init
+        if (!currentFilterMonth || currentFilterMonth.indexOf('-') === -1) return; 
         
-        const [fYear, fMonth] = currentFilterMonth.split('-');
+        const parts = currentFilterMonth.split('-');
+        const fYear = parseInt(parts[0]);
+        const fMonth = parseInt(parts[1]);
+        
         const filteredExpenses = expenses.filter(exp => {
             const d = new Date(exp.date);
-            return d.getFullYear() == parseInt(fYear) && (d.getMonth() + 1) == parseInt(fMonth);
+            return d.getFullYear() === fYear && (d.getMonth() + 1) === fMonth;
         });
 
         let total = 0; const catTotals = {};
@@ -722,13 +742,8 @@
         currentDate.setMonth(currentDate.getMonth() + dir); 
         const y = currentDate.getFullYear();
         const m = String(currentDate.getMonth() + 1).padStart(2, '0');
-        currentFilterMonth = `${y}-${m}`;
         
-        const displayStr = `${monthNames[currentDate.getMonth()]} ${y}`;
-        document.getElementById('home-month-display').innerText = displayStr;
-        document.getElementById('history-month-display').innerText = displayStr;
-        
-        updateDashboard(); renderCalendar(); 
+        updateFilterMonth(`${y}-${m}`); 
     }
 
     function renderCalendar() {
@@ -765,28 +780,6 @@
             grid.appendChild(div);
         }
     }
-
-    // --- SECURE INITIALIZATION ---
-    function initApp() {
-        if(isAppInitialized) return;
-        isAppInitialized = true;
-        try {
-            const incInput = document.getElementById('set-income');
-            if(incInput) incInput.value = localStorage.getItem('pro_income') || '';
-            renderSettingsCategories();
-            
-            // Force execution to calculate exact current month and trigger the UI filter immediately
-            const initY = new Date().getFullYear();
-            const initM = String(new Date().getMonth() + 1).padStart(2, '0');
-            updateFilterMonth(`${initY}-${initM}`);
-        } catch (e) {
-            console.error("Initialization error:", e);
-        }
-    }
-
-    // Run immediately to bypass mobile browser limits
-    initApp();
-
 </script>
 </body>
 </html>
