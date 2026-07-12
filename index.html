@@ -22,7 +22,6 @@
             --sidebar-width: 240px;
         }
 
-        /* Upgraded height to handle mobile browser toolbars */
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-main); margin: 0; display: flex; height: 100vh; height: 100dvh; overflow: hidden; -webkit-tap-highlight-color: transparent;}
 
         /* --- Mobile Header & Sidebar --- */
@@ -30,7 +29,6 @@
         .menu-btn { background: none; border: none; color: var(--text-main); font-size: 24px; cursor: pointer; padding: 0; }
         .overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 40; }
         
-        /* Added padding-bottom and overflow-y to sidebar to fix the cutoff issue */
         .sidebar { width: var(--sidebar-width); background-color: var(--bg-card); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 0 40px 0; z-index: 50; transition: transform 0.3s ease; overflow-y: auto;}
         .sidebar h2 { padding: 0 20px; font-size: 20px; background: linear-gradient(to right, #3b82f6, #8b5cf6); -webkit-background-clip: text; color: transparent; margin-bottom: 30px; flex-shrink: 0;}
         .nav-item { padding: 15px 20px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 10px; flex-shrink: 0;}
@@ -66,7 +64,6 @@
         button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
         button.secondary:hover { background: var(--bg-hover); color: var(--text-main); }
         .flex-row { display: flex; gap: 10px; margin-bottom: 20px; }
-        .month-filter { width: auto; margin-bottom: 0; padding: 8px 15px; font-weight: 600; cursor: pointer; color: var(--accent); border-color: rgba(59, 130, 246, 0.5); background: rgba(59, 130, 246, 0.05); }
 
         /* --- Floating Action Button (FAB) --- */
         .fab {
@@ -78,34 +75,20 @@
         .fab:hover { transform: scale(1.05); box-shadow: 0 10px 25px rgba(59,130,246,0.6); }
 
         /* --- Bottom Sheet & Mobile Numpad UI --- */
-        .sheet-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s;
-        }
+        .sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s; }
         .sheet-overlay.open { display: block; opacity: 1; }
-        
-        .bottom-sheet {
-            position: fixed; bottom: -100%; left: 0; width: 100%;
-            background: var(--bg-card); border-top-left-radius: 24px; border-top-right-radius: 24px;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.5); z-index: 1000;
-            transition: bottom 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            display: flex; flex-direction: column; max-height: 90vh; border-top: 1px solid var(--border);
-        }
+        .bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--bg-card); border-top-left-radius: 24px; border-top-right-radius: 24px; box-shadow: 0 -10px 40px rgba(0,0,0,0.5); z-index: 1000; transition: bottom 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); display: flex; flex-direction: column; max-height: 90vh; border-top: 1px solid var(--border); }
         .bottom-sheet.open { bottom: 0; }
-        
         .sheet-handle { width: 40px; height: 5px; background: var(--border); border-radius: 10px; margin: 12px auto 10px auto; }
         .sheet-content { padding: 0 20px 20px 20px; display: flex; flex-direction: column; gap: 15px; }
         .sheet-amount-display { text-align: center; font-size: 42px; font-weight: 800; color: var(--text-main); margin: 5px 0 10px 0; letter-spacing: -1px;}
         .sheet-amount-display.empty { color: var(--text-muted); }
-        
         .sheet-cat-scroll { display: flex; overflow-x: auto; gap: 12px; padding: 5px 0; scrollbar-width: none; }
         .sheet-cat-scroll::-webkit-scrollbar { display: none; }
         .sheet-cat-btn { background: var(--bg-input); border: 2px solid transparent; padding: 10px 16px; border-radius: 12px; white-space: nowrap; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; color: var(--text-muted);}
         .sheet-cat-btn.active { background: rgba(59, 130, 246, 0.15); border-color: var(--accent); color: var(--accent); }
-        
         .sheet-note-input { background: transparent; border: none; border-bottom: 2px solid var(--bg-input); border-radius: 0; padding: 10px 0; font-size: 16px; margin: 0; color: var(--text-main);}
         .sheet-note-input:focus { box-shadow: none; border-color: var(--accent); outline: none;}
-        
         .numpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px; }
         .numpad-btn { background: transparent; border: none; color: var(--text-main); font-size: 24px; font-weight: 600; padding: 15px 0; border-radius: 12px; cursor: pointer; transition: 0.1s; display: flex; justify-content: center; align-items: center;}
         .numpad-btn:active { background: var(--bg-hover); transform: scale(0.95);}
@@ -139,7 +122,6 @@
         .calendar-day.today { background: rgba(59, 130, 246, 0.15); border: 1px solid var(--accent); }
         .day-number { font-size: 15px; font-weight: 500;}
         .day-expense { font-size: 12px; color: #f87171; margin-top: 5px; font-weight: 700; }
-        
         .setting-cat-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: var(--bg-input); border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border);}
         
         /* Dashboard Totals UI */
@@ -177,9 +159,7 @@
 <div class="bottom-sheet" id="bottom-sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-content">
-        <!-- New Date Indicator when adding from calendar -->
         <div id="sheet-override-text" style="text-align: center; color: #60a5fa; font-weight: 600; font-size: 14px; display: none;"></div>
-        
         <div class="sheet-amount-display empty" id="sheet-amount">RM 0.00</div>
         
         <div class="sheet-cat-scroll" id="sheet-categories"></div>
@@ -238,7 +218,7 @@
         <div id="home" class="tab-content active">
             <div class="header-section">
                 <h1 style="margin: 0; font-size: 24px;">Overview</h1>
-                <button class="custom-month-btn" onclick="openMonthPicker()">📅 <span id="home-month-display">Select Month</span></button>
+                <button class="custom-month-btn" onclick="openMonthPicker()">📅 <span id="home-month-display">Current Month</span></button>
             </div>
             
             <div class="dashboard-grid">
@@ -296,7 +276,7 @@
             <div class="card" style="max-width: 800px; margin: 0 auto; padding-bottom: 10px;">
                 <div class="header-section" style="margin-bottom: 10px;">
                     <h2 class="card-title" style="margin: 0; border: none; padding: 0;">Transactions</h2>
-                    <button class="custom-month-btn" onclick="openMonthPicker()">📅 <span id="history-month-display">Select Month</span></button>
+                    <button class="custom-month-btn" onclick="openMonthPicker()">📅 <span id="history-month-display">Current Month</span></button>
                 </div>
                 <div id="history-list"></div>
             </div>
@@ -360,19 +340,23 @@
 </div>
 
 <script>
-    // System Data
+    // --- INITIALIZATION & FIX ---
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    let currentDate = new Date(); 
+    
+    // Automatically generate today's filter string (e.g. "2026-07") directly on load
+    const initYear = currentDate.getFullYear();
+    const initMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
+    let currentFilterMonth = `${initYear}-${initMonth}`; 
+    
     let expenses = JSON.parse(localStorage.getItem('pro_exp_data')) || [];
     let categories = JSON.parse(localStorage.getItem('pro_cat_data')) || ['🍔 Food', '🚗 Transport', '🛍️ Shopping', '🧾 Bills'];
-    let currentFilterMonth = ''; 
     let chartInstance = null;
-    let currentDate = new Date(); 
     let customOverrideDate = null; 
-    
-    // Bottom Sheet State
     let sheetInputStr = '';
     let sheetSelectedCat = categories[0];
+    let pickerYear = initYear;
 
-    // Smart Dictionary (Upgraded with Skincare & Cosmetics)
     const smartDictionary = {
         'cloth': '👕', 'clothes': '👕', 'shirt': '👔', 'shoes': '👟', 'watch': '⌚',
         'skincare': '🧴', 'skin': '🧴', 'lotion': '🧴', 'cream': '🧴', 'face': '💆', 'makeup': '💄', 'cosmetics': '💄', 'beauty': '💄',
@@ -387,25 +371,19 @@
         'home': '🏠', 'rent': '🔑', 'salary': '💰'
     };
 
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    let pickerYear = new Date().getFullYear();
-
     window.onload = function() {
         document.getElementById('set-income').value = localStorage.getItem('pro_income') || '';
         renderSettingsCategories();
-        
-        const initialY = new Date().getFullYear();
-        const initialM = String(new Date().getMonth() + 1).padStart(2, '0');
-        updateFilterMonth(`${initialY}-${initialM}`);
+        // Fire the filter update immediately to ensure data loads on exactly today's month
+        updateFilterMonth(currentFilterMonth);
     };
 
-    // --- BOTTOM SHEET & NUMPAD LOGIC (MOBILE FIRST) ---
+    // --- BOTTOM SHEET & NUMPAD LOGIC ---
     function openBottomSheet() {
         sheetInputStr = '';
         sheetSelectedCat = categories[0];
         document.getElementById('sheet-note').value = '';
         
-        // Show indicator if date is overridden via calendar
         const overrideText = document.getElementById('sheet-override-text');
         if (customOverrideDate) {
             const d = new Date(customOverrideDate);
@@ -425,7 +403,7 @@
     function closeBottomSheet() {
         document.getElementById('sheet-overlay').classList.remove('open');
         document.getElementById('bottom-sheet').classList.remove('open');
-        customOverrideDate = null; // Clear override if cancelled
+        customOverrideDate = null; 
     }
 
     function npPress(val) {
@@ -536,7 +514,6 @@
         });
     }
 
-    // Close Modals/Dropdowns if clicked outside
     window.onclick = function(event) { 
         if (!event.target.closest('.custom-select-wrapper')) { 
             document.getElementById('category-dropdown').classList.remove('show'); 
@@ -559,9 +536,7 @@
         element.classList.add('active');
         
         if(window.innerWidth <= 768) toggleSidebar();
-        if(tabId !== 'home') {
-            customOverrideDate = null;
-        }
+        if(tabId !== 'home') { customOverrideDate = null; }
     }
 
     // --- SETTINGS & CATS ---
@@ -793,7 +768,7 @@
             
             div.onclick = () => {
                 customOverrideDate = new Date(year, month, i, 12, 0).toISOString().slice(0, 16);
-                openBottomSheet(); // Stays on calendar, directly pops up sheet!
+                openBottomSheet(); 
             };
             grid.appendChild(div);
         }
