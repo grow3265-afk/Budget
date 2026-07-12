@@ -83,10 +83,20 @@
         .sheet-content { padding: 0 20px 20px 20px; display: flex; flex-direction: column; gap: 15px; }
         .sheet-amount-display { text-align: center; font-size: 42px; font-weight: 800; color: var(--text-main); margin: 5px 0 10px 0; letter-spacing: -1px;}
         .sheet-amount-display.empty { color: var(--text-muted); }
-        .sheet-cat-scroll { display: flex; overflow-x: auto; gap: 12px; padding: 5px 0; scrollbar-width: none; }
+        
+        /* UPGRADED CATEGORY GRID UI */
+        .sheet-cat-scroll { 
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; 
+            padding: 5px 0; max-height: 120px; overflow-y: auto; scrollbar-width: none; 
+        }
         .sheet-cat-scroll::-webkit-scrollbar { display: none; }
-        .sheet-cat-btn { background: var(--bg-input); border: 2px solid transparent; padding: 10px 16px; border-radius: 12px; white-space: nowrap; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; color: var(--text-muted);}
+        .sheet-cat-btn { 
+            background: var(--bg-input); border: 2px solid transparent; padding: 8px 14px; 
+            border-radius: 12px; white-space: nowrap; font-weight: 600; font-size: 14px; cursor: pointer; 
+            transition: 0.2s; display: flex; align-items: center; gap: 6px; color: var(--text-muted);
+        }
         .sheet-cat-btn.active { background: rgba(59, 130, 246, 0.15); border-color: var(--accent); color: var(--accent); }
+        
         .sheet-note-input { background: transparent; border: none; border-bottom: 2px solid var(--bg-input); border-radius: 0; padding: 10px 0; font-size: 16px; margin: 0; color: var(--text-main);}
         .sheet-note-input:focus { box-shadow: none; border-color: var(--accent); outline: none;}
         .numpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px; }
@@ -109,7 +119,12 @@
         .expense-row { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-input); border-radius: 10px; margin-bottom: 10px; border-left: 4px solid transparent; transition: 0.2s; border: 1px solid var(--border);}
         .expense-row:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
         .cat-badge { background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; color: #e2e8f0; display: inline-block;}
-        .delete-btn { background: rgba(239, 68, 68, 0.15); color: #f87171; padding: 6px 12px; width: auto; border-radius: 6px; margin-left: 15px; transition: 0.2s;}
+        
+        /* Edit & Delete Buttons */
+        .action-btns-wrap { display: flex; align-items: center; gap: 8px; margin-left: 15px;}
+        .edit-btn { background: rgba(59, 130, 246, 0.15); color: var(--accent); padding: 6px 12px; width: auto; border-radius: 6px; transition: 0.2s; border: none; cursor: pointer; font-weight: bold; font-size: 14px;}
+        .edit-btn:hover { background: var(--accent); color: white; }
+        .delete-btn { background: rgba(239, 68, 68, 0.15); color: #f87171; padding: 6px 12px; width: auto; border-radius: 6px; transition: 0.2s; border: none; cursor: pointer; font-weight: bold; font-size: 14px;}
         .delete-btn:hover { background: var(--danger); color: white; }
 
         /* --- Calendar --- */
@@ -340,20 +355,24 @@
 </div>
 
 <script>
-    // --- VARIABLES & STATE (Safely Initialized Once) ---
+    // --- VARIABLES & STATE ---
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     let currentDate = new Date(); 
     
-    // Safely structure current year/month
     let currentFilterMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
     
     let expenses = JSON.parse(localStorage.getItem('pro_exp_data')) || [];
     let categories = JSON.parse(localStorage.getItem('pro_cat_data')) || ['🍔 Food', '🚗 Transport', '🛍️ Shopping', '🧾 Bills'];
     let chartInstance = null;
+    
+    // Bottom Sheet Tracking Variables
     let customOverrideDate = null; 
+    let editingExpenseId = null; // Tracks if we are editing an old expense
+    
     let sheetInputStr = '';
     let sheetSelectedCat = categories[0];
     let pickerYear = currentDate.getFullYear();
+    let isAppInitialized = false;
 
     const smartDictionary = {
         'cloth': '👕', 'clothes': '👕', 'shirt': '👔', 'shoes': '👟', 'watch': '⌚',
@@ -372,21 +391,29 @@
     window.onload = function() {
         document.getElementById('set-income').value = localStorage.getItem('pro_income') || '';
         renderSettingsCategories();
-        
-        // Auto-run filter to current month immediately without crashing
         updateFilterMonth(currentFilterMonth);
     };
 
-    // --- BOTTOM SHEET & NUMPAD LOGIC ---
+    // --- BOTTOM SHEET, NUMPAD & EDITING LOGIC ---
     function openBottomSheet() {
-        sheetInputStr = '';
-        sheetSelectedCat = categories[0];
-        document.getElementById('sheet-note').value = '';
+        // If we are NOT editing, reset the inputs to clean slate
+        if (!editingExpenseId) {
+            sheetInputStr = '';
+            sheetSelectedCat = categories.includes(sheetSelectedCat) ? sheetSelectedCat : categories[0];
+            document.getElementById('sheet-note').value = '';
+            document.getElementById('sheet-save-btn').innerText = "Save Expense";
+        } else {
+            // If editing, change button text
+            document.getElementById('sheet-save-btn').innerText = "Update Expense";
+        }
         
         const overrideText = document.getElementById('sheet-override-text');
-        if (customOverrideDate) {
+        if (customOverrideDate && !editingExpenseId) {
             const d = new Date(customOverrideDate);
-            overrideText.innerText = "📅 Adding for: " + d.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
+            overrideText.innerText = "📅 Adding for: " + d.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+            overrideText.style.display = 'block';
+        } else if (editingExpenseId) {
+            overrideText.innerText = "✏️ Editing Transaction";
             overrideText.style.display = 'block';
         } else {
             overrideText.style.display = 'none';
@@ -403,6 +430,29 @@
         document.getElementById('sheet-overlay').classList.remove('open');
         document.getElementById('bottom-sheet').classList.remove('open');
         customOverrideDate = null; 
+        editingExpenseId = null; // Clear edit tracking
+    }
+    
+    function editExpense(id) {
+        const expToEdit = expenses.find(e => e.id === id);
+        if(!expToEdit) return;
+        
+        editingExpenseId = id;
+        sheetInputStr = expToEdit.amount.toString();
+        sheetSelectedCat = expToEdit.category;
+        
+        // Strip emoji from category to see if note is just default category text
+        let defaultNote = expToEdit.category;
+        if(expToEdit.category.includes(' ')) defaultNote = expToEdit.category.substring(expToEdit.category.indexOf(' ') + 1);
+        
+        // Only fill note input if they typed a custom note
+        if (expToEdit.note !== expToEdit.category && expToEdit.note !== defaultNote) {
+            document.getElementById('sheet-note').value = expToEdit.note;
+        } else {
+            document.getElementById('sheet-note').value = '';
+        }
+        
+        openBottomSheet();
     }
 
     function npPress(val) {
@@ -454,29 +504,39 @@
         if(sheetSelectedCat.includes(' ')) defaultNote = sheetSelectedCat.substring(sheetSelectedCat.indexOf(' ') + 1);
         const note = document.getElementById('sheet-note').value || defaultNote;
 
-        let timestamp = customOverrideDate || new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+        if (editingExpenseId) {
+            // Update existing expense
+            const index = expenses.findIndex(e => e.id === editingExpenseId);
+            if (index !== -1) {
+                expenses[index].amount = amount;
+                expenses[index].category = sheetSelectedCat;
+                expenses[index].note = note;
+            }
+        } else {
+            // Create new expense
+            let timestamp = customOverrideDate || new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            expenses.push({ id: Date.now(), amount, category: sheetSelectedCat, note, date: timestamp });
+            
+            // Auto switch to the month we just added it to
+            updateFilterMonth(timestamp.slice(0, 7)); 
+        }
 
-        expenses.push({ id: Date.now(), amount, category: sheetSelectedCat, note, date: timestamp });
         localStorage.setItem('pro_exp_data', JSON.stringify(expenses));
         
-        updateFilterMonth(timestamp.slice(0, 7)); 
-        
-        customOverrideDate = null; 
+        closeBottomSheet(); 
         updateDashboard(); 
         renderCalendar();
-        closeBottomSheet();
     }
 
     // --- FILTER & MODAL LOGIC ---
     function updateFilterMonth(val) {
-        if (!val || val.indexOf('-') === -1) return; // Safety check
-        
+        if (!val || val.indexOf('-') === -1) return; 
         currentFilterMonth = val;
         const parts = val.split('-');
         const y = parseInt(parts[0]);
         const m = parseInt(parts[1]);
         
-        if (isNaN(y) || isNaN(m)) return; // Safety check
+        if (isNaN(y) || isNaN(m)) return; 
         
         const displayStr = `${monthNames[m-1]} ${y}`;
         
@@ -714,8 +774,9 @@
                                 <span style="font-size: 13px; color: var(--text-muted);">${timeStr}</span>
                             </div>
                         </div>
-                        <div style="display:flex; align-items:center;">
-                            <span style="font-weight:700; font-size:18px; color: var(--text-main);">RM ${exp.amount.toFixed(2)}</span>
+                        <div class="action-btns-wrap">
+                            <span style="font-weight:700; font-size:18px; color: var(--text-main); margin-right: 10px;">RM ${exp.amount.toFixed(2)}</span>
+                            <button class="edit-btn" onclick="editExpense(${exp.id})">✎</button>
                             <button class="delete-btn" onclick="deleteExpense(${exp.id})">✕</button>
                         </div>
                     </div>`;
@@ -780,6 +841,25 @@
             grid.appendChild(div);
         }
     }
+
+    // --- SECURE INITIALIZATION ---
+    function initApp() {
+        if(isAppInitialized) return;
+        isAppInitialized = true;
+        try {
+            const incInput = document.getElementById('set-income');
+            if(incInput) incInput.value = localStorage.getItem('pro_income') || '';
+            renderSettingsCategories();
+            
+            const initY = new Date().getFullYear();
+            const initM = String(new Date().getMonth() + 1).padStart(2, '0');
+            updateFilterMonth(`${initY}-${initM}`);
+        } catch (e) {
+            console.error("Initialization error:", e);
+        }
+    }
+
+    initApp();
 </script>
 </body>
 </html>
