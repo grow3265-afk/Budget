@@ -22,15 +22,18 @@
             --sidebar-width: 240px;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; -webkit-tap-highlight-color: transparent;}
+        /* Upgraded height to handle mobile browser toolbars */
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-main); margin: 0; display: flex; height: 100vh; height: 100dvh; overflow: hidden; -webkit-tap-highlight-color: transparent;}
 
         /* --- Mobile Header & Sidebar --- */
         .mobile-header { display: none; background: var(--bg-card); padding: 15px 20px; border-bottom: 1px solid var(--border); align-items: center; justify-content: space-between; }
         .menu-btn { background: none; border: none; color: var(--text-main); font-size: 24px; cursor: pointer; padding: 0; }
         .overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 40; }
-        .sidebar { width: var(--sidebar-width); background-color: var(--bg-card); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 0; z-index: 50; transition: transform 0.3s ease; }
-        .sidebar h2 { padding: 0 20px; font-size: 20px; background: linear-gradient(to right, #3b82f6, #8b5cf6); -webkit-background-clip: text; color: transparent; margin-bottom: 30px; }
-        .nav-item { padding: 15px 20px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 10px;}
+        
+        /* Added padding-bottom and overflow-y to sidebar to fix the cutoff issue */
+        .sidebar { width: var(--sidebar-width); background-color: var(--bg-card); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 0 40px 0; z-index: 50; transition: transform 0.3s ease; overflow-y: auto;}
+        .sidebar h2 { padding: 0 20px; font-size: 20px; background: linear-gradient(to right, #3b82f6, #8b5cf6); -webkit-background-clip: text; color: transparent; margin-bottom: 30px; flex-shrink: 0;}
+        .nav-item { padding: 15px 20px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 10px; flex-shrink: 0;}
         .nav-item:hover { background-color: var(--bg-input); color: var(--text-main); }
         .nav-item.active { background-color: rgba(59, 130, 246, 0.1); color: var(--accent); border-left-color: var(--accent); }
 
@@ -44,7 +47,7 @@
         
         @media (max-width: 768px) { 
             .dashboard-grid { grid-template-columns: 1fr; } 
-            .sidebar { position: fixed; height: 100%; transform: translateX(-100%); }
+            .sidebar { position: fixed; height: 100%; height: 100dvh; transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
             .mobile-header { display: flex; }
             .overlay.open { display: block; }
@@ -92,7 +95,7 @@
         
         .sheet-handle { width: 40px; height: 5px; background: var(--border); border-radius: 10px; margin: 12px auto 10px auto; }
         .sheet-content { padding: 0 20px 20px 20px; display: flex; flex-direction: column; gap: 15px; }
-        .sheet-amount-display { text-align: center; font-size: 42px; font-weight: 800; color: var(--text-main); margin: 10px 0; letter-spacing: -1px;}
+        .sheet-amount-display { text-align: center; font-size: 42px; font-weight: 800; color: var(--text-main); margin: 5px 0 10px 0; letter-spacing: -1px;}
         .sheet-amount-display.empty { color: var(--text-muted); }
         
         .sheet-cat-scroll { display: flex; overflow-x: auto; gap: 12px; padding: 5px 0; scrollbar-width: none; }
@@ -100,8 +103,8 @@
         .sheet-cat-btn { background: var(--bg-input); border: 2px solid transparent; padding: 10px 16px; border-radius: 12px; white-space: nowrap; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; color: var(--text-muted);}
         .sheet-cat-btn.active { background: rgba(59, 130, 246, 0.15); border-color: var(--accent); color: var(--accent); }
         
-        .sheet-note-input { background: transparent; border: none; border-bottom: 2px solid var(--bg-input); border-radius: 0; padding: 10px 0; font-size: 16px; margin: 0;}
-        .sheet-note-input:focus { box-shadow: none; border-color: var(--accent); }
+        .sheet-note-input { background: transparent; border: none; border-bottom: 2px solid var(--bg-input); border-radius: 0; padding: 10px 0; font-size: 16px; margin: 0; color: var(--text-main);}
+        .sheet-note-input:focus { box-shadow: none; border-color: var(--accent); outline: none;}
         
         .numpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px; }
         .numpad-btn { background: transparent; border: none; color: var(--text-main); font-size: 24px; font-weight: 600; padding: 15px 0; border-radius: 12px; cursor: pointer; transition: 0.1s; display: flex; justify-content: center; align-items: center;}
@@ -136,8 +139,7 @@
         .calendar-day.today { background: rgba(59, 130, 246, 0.15); border: 1px solid var(--accent); }
         .day-number { font-size: 15px; font-weight: 500;}
         .day-expense { font-size: 12px; color: #f87171; margin-top: 5px; font-weight: 700; }
-        .calendar-notice { display: none; background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 12px; border-radius: 8px; text-align: center; font-size: 14px; margin-bottom: 20px; font-weight: 600; border: 1px solid rgba(59, 130, 246, 0.3);}
-        .calendar-notice.active { display: block; }
+        
         .setting-cat-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: var(--bg-input); border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border);}
         
         /* Dashboard Totals UI */
@@ -175,7 +177,11 @@
 <div class="bottom-sheet" id="bottom-sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-content">
+        <!-- New Date Indicator when adding from calendar -->
+        <div id="sheet-override-text" style="text-align: center; color: #60a5fa; font-weight: 600; font-size: 14px; display: none;"></div>
+        
         <div class="sheet-amount-display empty" id="sheet-amount">RM 0.00</div>
+        
         <div class="sheet-cat-scroll" id="sheet-categories"></div>
         <input type="text" class="sheet-note-input" id="sheet-note" placeholder="Add a note (optional)...">
         
@@ -235,12 +241,8 @@
                 <button class="custom-month-btn" onclick="openMonthPicker()">📅 <span id="home-month-display">Select Month</span></button>
             </div>
             
-            <div id="calendar-override-notice" class="calendar-notice">
-                Logging expense for: <span id="override-date-text"></span>
-            </div>
-            
             <div class="dashboard-grid">
-                <!-- Add Expense Area -->
+                <!-- Add Expense Area (Desktop View) -->
                 <div class="card">
                     <h2 class="card-title">📝 Record Expense</h2>
                     
@@ -249,9 +251,7 @@
 
                     <label>Category</label>
                     <div class="custom-select-wrapper">
-                        <!-- THE FIX: This invisible input catches the 'Next' button from your mobile keyboard -->
                         <input type="text" style="position: absolute; width: 1px; height: 1px; opacity: 0; border: none; padding: 0; z-index: -1;" onfocus="document.getElementById('category-dropdown').classList.add('show'); this.blur();">
-                        
                         <div class="custom-select" id="selected-category" onclick="toggleDropdown()">
                             <span id="cat-text">Select Category</span>
                             <span>▼</span>
@@ -340,7 +340,7 @@
                             </div>
                             <div style="flex: 3;">
                                 <label>Category Name</label>
-                                <input type="text" id="set-cat-name" placeholder="e.g. Coffee">
+                                <input type="text" id="set-cat-name" placeholder="e.g. Coffee, Skincare...">
                             </div>
                         </div>
                         <button onclick="addNewCategory()">+ Save Category</button>
@@ -372,8 +372,10 @@
     let sheetInputStr = '';
     let sheetSelectedCat = categories[0];
 
+    // Smart Dictionary (Upgraded with Skincare & Cosmetics)
     const smartDictionary = {
         'cloth': '👕', 'clothes': '👕', 'shirt': '👔', 'shoes': '👟', 'watch': '⌚',
+        'skincare': '🧴', 'skin': '🧴', 'lotion': '🧴', 'cream': '🧴', 'face': '💆', 'makeup': '💄', 'cosmetics': '💄', 'beauty': '💄',
         'gym': '🏋️', 'sport': '⚽', 'swim': '🏊', 'bike': '🚴', 'run': '🏃',
         'fries': '🍟', 'mcdonalds': '🍟', 'kfc': '🍗', 'burger': '🍔', 'pizza': '🍕',
         'medic': '🩹', 'medical': '🏥', 'hospital': '🏥', 'doctor': '👨‍⚕️', 'medicine': '💊',
@@ -402,6 +404,17 @@
         sheetInputStr = '';
         sheetSelectedCat = categories[0];
         document.getElementById('sheet-note').value = '';
+        
+        // Show indicator if date is overridden via calendar
+        const overrideText = document.getElementById('sheet-override-text');
+        if (customOverrideDate) {
+            const d = new Date(customOverrideDate);
+            overrideText.innerText = "📅 Adding for: " + d.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
+            overrideText.style.display = 'block';
+        } else {
+            overrideText.style.display = 'none';
+        }
+
         updateSheetDisplay();
         renderSheetCategories();
         
@@ -412,6 +425,7 @@
     function closeBottomSheet() {
         document.getElementById('sheet-overlay').classList.remove('open');
         document.getElementById('bottom-sheet').classList.remove('open');
+        customOverrideDate = null; // Clear override if cancelled
     }
 
     function npPress(val) {
@@ -471,8 +485,6 @@
         updateFilterMonth(timestamp.slice(0, 7)); 
         
         customOverrideDate = null; 
-        document.getElementById('calendar-override-notice').classList.remove('active');
-        
         updateDashboard(); 
         renderCalendar();
         closeBottomSheet();
@@ -549,7 +561,6 @@
         if(window.innerWidth <= 768) toggleSidebar();
         if(tabId !== 'home') {
             customOverrideDate = null;
-            document.getElementById('calendar-override-notice').classList.remove('active');
         }
     }
 
@@ -644,7 +655,7 @@
         updateFilterMonth(timestamp.slice(0, 7));
         
         document.getElementById('exp-amount').value = ''; document.getElementById('exp-note').value = '';
-        customOverrideDate = null; document.getElementById('calendar-override-notice').classList.remove('active');
+        customOverrideDate = null; 
         
         const btn = document.querySelector('#home button');
         btn.innerText = "✅ Saved!"; btn.style.background = "#10b981";
@@ -782,10 +793,7 @@
             
             div.onclick = () => {
                 customOverrideDate = new Date(year, month, i, 12, 0).toISOString().slice(0, 16);
-                document.getElementById('override-date-text').innerText = thisDayDate.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
-                document.getElementById('calendar-override-notice').classList.add('active');
-                switchTab('home', document.querySelectorAll('.nav-item')[0]); 
-                openBottomSheet();
+                openBottomSheet(); // Stays on calendar, directly pops up sheet!
             };
             grid.appendChild(div);
         }
